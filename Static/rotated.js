@@ -7,6 +7,8 @@ window.onload = function () {
 
     var d = 50;
     var theta = 7;
+    var dy;
+    var dx;
 
     function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect()
@@ -25,7 +27,6 @@ window.onload = function () {
     height = canvas.height;
     gradient = 0
     
-
     //CONSTANTS
     var crystalLength = 400;
     let braggPlanes = 2;
@@ -35,9 +36,9 @@ window.onload = function () {
     let xRaySource = [20,reflectionPoint[1], 100, 150] // xPos, yPos, width, height
     let xRaySourceInitialX = (xRaySource[0]+xRaySource[2])
     let initalXRayLength = 500
-
+    let detectorPos = canvas.width - 300
     var secondx; 
-
+    var radians;
     update()
 
     thetaSlider.oninput = function(){
@@ -52,8 +53,8 @@ window.onload = function () {
     }
 
     function update(){
-        console.log(theta)
         ctx.clearRect(0, 0, c.width, c.height);
+        radians = theta * (Math.PI/180)
         draw_crystal(parseInt(d),theta)
         draw_xray_source()
         draw_initial_xray()
@@ -83,8 +84,6 @@ window.onload = function () {
         ctx.lineTo(secondx, reflectionPoint[1] + (0.25 * xRaySource[3]))
         ctx.stroke()
         
-        console.log(secondx)
-
         sinWave(xRaySourceInitialX, reflectionPoint[1] , 0, reflectionPoint[0]- xRaySource[0] - xRaySource[2])
         sinWave(xRaySourceInitialX, reflectionPoint[1] + (0.25 * xRaySource[3]), 0, secondx - xRaySource[0] - xRaySource[2])
 
@@ -92,37 +91,35 @@ window.onload = function () {
 
     function draw_initial_reflected_xray(){
 
-        var radians = theta * (Math.PI/180)
-
         var x = initalXRayLength * Math.cos(2*radians)
-        var y = initalXRayLength * Math.sin(2*radians)
+        var y = (detectorPos - reflectionPoint[0]) * Math.tan(2*radians)
 
-        var dx = reflectionPoint[0] + x - secondx
-        var dy = dx * Math.tan(2*radians)
+        //dx = reflectionPoint[0] + x - secondx
+        dy = (detectorPos - secondx) * Math.tan( 2 * radians)
+
+        console.log(y)
 
         var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
-        var secondXRayLength = Math.sqrt(dx**2 + dy**2)
-
+        var topXRayLength = Math.sqrt((detectorPos - reflectionPoint[0])**2 + y**2)
+        var bottomXRayLength = Math.sqrt((detectorPos- secondx)**2 + dy**2)
         ctx.lineWidth = 2;
      
         ctx.beginPath();
         ctx.strokeStyle='orange'
 
         ctx.moveTo(reflectionPoint[0],reflectionPoint[1])
-        ctx.lineTo(reflectionPoint[0]+x,reflectionPoint[1]-y)
+        ctx.lineTo(detectorPos,reflectionPoint[1]-y)
 
         ctx.moveTo(secondx, secondXRayY)
-        ctx.lineTo(secondx + dx , secondXRayY - dy )
+        ctx.lineTo(detectorPos, secondXRayY - dy)
         ctx.stroke()
-
-        negativeSinWave(reflectionPoint[0],reflectionPoint[1],2*theta,initalXRayLength)
-        negativeSinWave(secondx,secondXRayY,2*theta,secondXRayLength)
+        
+        negativeSinWave(reflectionPoint[0],reflectionPoint[1],2*theta,topXRayLength)
+        negativeSinWave(secondx,secondXRayY,2*theta,bottomXRayLength)
     }
 
     function draw_xray_passthrough(){
         
-        var radians = theta * (Math.PI/180)
-
         var x = initalXRayLength * Math.cos(2*radians)
         var dx = reflectionPoint[0] + x - secondx
 
@@ -133,25 +130,33 @@ window.onload = function () {
 
         ctx.beginPath()
         ctx.moveTo(secondx, secondXRayY)
-        ctx.lineTo(secondx + dx, secondXRayY)
+        ctx.lineTo(canvas.width - 300, secondXRayY)
         ctx.stroke()
     }
 
     function output() { 
+        console.log("OUTPUT CALLED ")
+        
         var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
-        var dx = reflectionPoint[0] + x - secondx
-
+        var y = initalXRayLength * Math.sin(2*radians)
+        
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0,0])
         ctx.rect(canvas.width - 250, xRaySource[1]-400, 200, 600)
+        ctx.rect(canvas.width - 300, xRaySource[1]-400, 0, 600)
         ctx.stroke()
 
         ctx.beginPath()
         ctx.arc(canvas.width - 150, secondXRayY, 2, 0,2*Math.PI)
-        ctx.arc(canvas.width - 150, secondXRayY, 2, 0,2*Math.PI)
         ctx.stroke()
 
+        var averageY = (secondXRayY - dy + reflectionPoint[1]-y)/2
+
+        ctx.beginPath()
+        ctx.arc(canvas.width - 150, averageY, 2, 0,2*Math.PI)
+        ctx.stroke()
+        
     }
 
     function rotate(cx, cy, x, y, angle) {
