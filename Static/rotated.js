@@ -1,14 +1,8 @@
 window.onload = function () {
-    console.log("JS LOADED")
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     var thetaSlider = document.getElementById('theta');
     var dSlider = document.getElementById('d');
-
-    var d = 50;
-    var theta = 7;
-    var dy;
-    var dx;
 
     function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect()
@@ -22,23 +16,27 @@ window.onload = function () {
         getCursorPosition(canvas, e)
     })
 
-
     width = canvas.width;
     height = canvas.height;
     gradient = 0
     
     //CONSTANTS
-    var crystalLength = 400;
-    let braggPlanes = 2;
+    let crystalLength = 400;
+    let braggPlanes = 3;
     let centralX = width/2;
     let centralY = height/2;
-    let reflectionPoint = [centralX-200,centralY+100]; // Change this to change the position of the diagram
+    let reflectionPoint = [centralX-150,centralY+100]; // Change this to change the position of the diagram
     let xRaySource = [20,reflectionPoint[1], 100, 150] // xPos, yPos, width, height
     let xRaySourceInitialX = (xRaySource[0]+xRaySource[2])
     let initalXRayLength = 500
-    let detectorPos = canvas.width - 300
+    let detectorPos = width - 300
+
+    //VARIABLES
     var secondx; 
     var radians;
+    var d = 50;
+    var theta = 7;
+    var dy;
     update()
 
     thetaSlider.oninput = function(){
@@ -91,13 +89,8 @@ window.onload = function () {
 
     function draw_initial_reflected_xray(){
 
-        var x = initalXRayLength * Math.cos(2*radians)
         var y = (detectorPos - reflectionPoint[0]) * Math.tan(2*radians)
-
-        //dx = reflectionPoint[0] + x - secondx
         dy = (detectorPos - secondx) * Math.tan( 2 * radians)
-
-        console.log(y)
 
         var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
         var topXRayLength = Math.sqrt((detectorPos - reflectionPoint[0])**2 + y**2)
@@ -135,8 +128,6 @@ window.onload = function () {
     }
 
     function output() { 
-        console.log("OUTPUT CALLED ")
-        
         var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
         var y = initalXRayLength * Math.sin(2*radians)
         
@@ -221,7 +212,6 @@ window.onload = function () {
         
         theta_r = (90-theta) * (Math.PI/180)
 
-        braggPlanes = 2
 
         for(var i = 0; i < braggPlanes; i++){
                 var x = Math.sin(theta_r) * (crystalLength/2)
@@ -240,20 +230,21 @@ window.onload = function () {
                 ) // Calculate the position of the arcs by starting from the bottom left then incrementing x and y up per the offset and d length. Honestly don't fully understand it but hey it works.
                 ctx.stroke()
             }
-                ctx.beginPath()
-                
-                ax = reflectionPoint[0]+x+(i*dx)
-                bx = reflectionPoint[1]-y+(i*dy)
-                cx = reflectionPoint[0]-x+(i*dx)
-                dx = reflectionPoint[1]+y+(i*dy)
-                
-                ctx.moveTo(ax, bx)
-                ctx.lineTo(cx, dx)
-                gradient = (dx - bx) / (ax - cx)
-    
-                secondx = calc(ax,bx,reflectionPoint[1]+ (0.25 * xRaySource[3]), gradient)
-                
-                ctx.stroke()
+                    ctx.beginPath()
+                    
+                    ax = reflectionPoint[0]+x+(i*dx)
+                    bx = reflectionPoint[1]-y+(i*dy)
+                    cx = reflectionPoint[0]-x+(i*dx)
+                    dx = reflectionPoint[1]+y+(i*dy)
+                    
+                    ctx.moveTo(ax, bx)
+                    ctx.lineTo(cx, dx)
+                    if (i == 1) {
+                        gradient = (dx - bx) / (ax - cx)
+            
+                        secondx = calc(ax,bx,reflectionPoint[1]+ (0.25 * xRaySource[3]), gradient)
+                    }
+                    ctx.stroke()
         }
     }
 
