@@ -23,10 +23,11 @@ window.onload = function () {
     //CONSTANTS
     let crystalLength = 400;
     let braggPlanes = 3;
+    
     let centralX = width/2;
     let centralY = height/2;
     let reflectionPoint = [centralX-150,centralY+100]; // Change this to change the position of the diagram
-    let xRaySource = [20,reflectionPoint[1], 100, 150] // xPos, yPos, width, height
+    let xRaySource = [20,reflectionPoint[1]+15, 100, 150] // xPos, yPos, width, height
     let xRaySourceInitialX = (xRaySource[0]+xRaySource[2])
     let initalXRayLength = 500
     let detectorPos = width - 300
@@ -37,6 +38,7 @@ window.onload = function () {
     var d = 50;
     var theta = 7;
     var dy;
+
     update()
 
     thetaSlider.oninput = function(){
@@ -59,12 +61,12 @@ window.onload = function () {
         draw_initial_reflected_xray()
         draw_xray_passthrough()
         output()
-        // check_bragg(theta,d)
+        check_bragg(theta,d)
     }
 
     function draw_xray_source(){
         ctx.beginPath()
-        ctx.strokeStyle = 'red'
+        ctx.strokeStyle = 'black'
         ctx.rect(xRaySource[0],(xRaySource[1]-(xRaySource[3]/2)),xRaySource[2],xRaySource[3])
         ctx.stroke()
     }
@@ -73,7 +75,8 @@ window.onload = function () {
         
         ctx.lineWidth = 2;
         ctx.setLineDash([0,0])
-        
+        ctx.strokeStyle = 'red'
+
         ctx.beginPath()
         ctx.moveTo(xRaySourceInitialX, reflectionPoint[1] )
         ctx.lineTo(reflectionPoint[0], reflectionPoint[1] )
