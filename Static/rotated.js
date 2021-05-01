@@ -38,12 +38,16 @@ window.onload = function () {
     var d = 50;
     var theta = 7;
     var dy;
-
+    var satisfiedBragg = false;
+    var secondXRayY;
+    var averageY;
+    var correctAverageY;
     update()
 
     thetaSlider.oninput = function(){
         oldtheta = theta
         theta = parseInt(this.value)
+        document.getElementById('thetaValue').innerHTML = (String(this.value +  " °"))
         update()
     }
 
@@ -62,6 +66,9 @@ window.onload = function () {
         draw_xray_passthrough()
         output()
         check_bragg(theta,d)
+        if (satisfiedBragg == true){
+            isSatisfiedBragg()
+        }
     }
 
     function draw_xray_source(){
@@ -119,7 +126,7 @@ window.onload = function () {
         var x = initalXRayLength * Math.cos(2*radians)
         var dx = reflectionPoint[0] + x - secondx
 
-        var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
+        secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
 
         ctx.setLineDash([5,4])
         ctx.strokeStyle='red'
@@ -131,7 +138,7 @@ window.onload = function () {
     }
 
     function output() { 
-        var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
+        //var secondXRayY = reflectionPoint[1] + (0.25 * xRaySource[3])
         var y = initalXRayLength * Math.sin(2*radians)
         
         ctx.beginPath()
@@ -143,15 +150,16 @@ window.onload = function () {
 
         ctx.beginPath()
         ctx.arc(canvas.width - 150, secondXRayY, 2, 0,2*Math.PI)
-        ctx.stroke()
+        ctx.fill()
 
-        var averageY = (secondXRayY - dy + reflectionPoint[1]-y)/2
+        averageY = (secondXRayY - dy + reflectionPoint[1]-y)/2
 
         ctx.beginPath()
         ctx.arc(canvas.width - 150, averageY, 2, 0,2*Math.PI)
-        ctx.stroke()
-        
+        ctx.stroke()        
     }
+
+
 
     function rotate(cx, cy, x, y, angle) {
         var radians = (Math.PI / 180) * angle,
@@ -252,19 +260,28 @@ window.onload = function () {
     }
 
     function check_bragg(value,d){
+        
         wavelength = 15
         n = 1
-
-        d = d / 5
-        var radians = theta * (Math.PI/180)
+        d = d / 4
 
         console.log("Theta:", value)
-        console.log("Radians:",Math.sin(radians),Math.sin(radians).toFixed(2))
+        console.log("Radians:",Math.sin(10*radians),Math.sin(10*radians).toFixed(2))
         console.log("Bragg:",wavelength/(2*d),(wavelength/(2*d)).toFixed(2))
 
-        if ((Math.sin(radians).toFixed(2)) == (wavelength/(2*d)).toFixed(2)){
+        if ((Math.sin(10*radians).toFixed(2)) == (wavelength/(2*d)).toFixed(2)){
+            satisfiedBragg = true
+            correctAverageY = averageY
             console.log("YES")
         }
+    }
+
+    function isSatisfiedBragg(){
+        console.log("SATISIFIED CALLED")
+        ctx.beginPath()
+        ctx.arc(canvas.width - 150, correctAverageY, 2, 0,2*Math.PI)
+        ctx.fill()
+            
     }
 
     function calc(x1, y1, y,m){
