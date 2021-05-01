@@ -26,7 +26,7 @@ window.onload = function () {
     
     let centralX = width/2;
     let centralY = height/2;
-    let reflectionPoint = [centralX-150,centralY+100]; // Change this to change the position of the diagram
+    let reflectionPoint = [centralX-100,centralY+100]; // Change this to change the position of the diagram
     let xRaySource = [20,reflectionPoint[1]+15, 100, 150] // xPos, yPos, width, height
     let xRaySourceInitialX = (xRaySource[0]+xRaySource[2])
     let initalXRayLength = 500
