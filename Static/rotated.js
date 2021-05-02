@@ -167,7 +167,7 @@ window.onload = function () {
         ctx.lineWidth = 2;
 
         ctx.beginPath();
-        ctx.strokeStyle = 'orange'
+        ctx.strokeStyle = 'green'
 
         ctx.moveTo(REFLECTION_POINT[0], REFLECTION_POINT[1])
         ctx.lineTo(DETECTOR_POSITION, REFLECTION_POINT[1] - topRefDetY)
@@ -225,7 +225,7 @@ window.onload = function () {
         ctx.lineWidth = 1;
 
         var amplitude = 10;
-        var frequency = 4;
+        var frequency = 3;
 
 
         for (var x = 0; x < lineLength; x++) {
@@ -286,12 +286,13 @@ window.onload = function () {
         wavelength = 15
         n = 1
         d = d / 4
+        factor = 11
 
         console.log("Theta:", value)
-        console.log("Radians:", Math.sin(10 * radians), Math.sin(10 * radians).toFixed(2))
+        console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(2))
         console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(2))
 
-        if ((Math.sin(10 * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
+        if ((Math.sin(factor * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
             isBraggSatisfied = true
             correctAverageY = currentAverageY
             console.log("YES")
