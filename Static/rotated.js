@@ -28,7 +28,7 @@ window.onload = function () {
     const REFLECTION_POINT = [CENTRAL_X - 150, CENTRAL_Y + 100]; // Change this to change the position of the diagram
     const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
     const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
-    const DETECTOR_POSITION = width - 300
+    const DETECTOR_POSITION = width - 400
     const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE[3])
     const ATOM_SPACING = 40
 
@@ -44,10 +44,13 @@ window.onload = function () {
     var currentAverageY;
     var correctAverageY;
 
-    update()
-
+    try { 
+        update()
+    }
+    catch(err){
+        console.log(err)
+    }
     thetaSlider.oninput = function () {
-        oldtheta = theta
         theta = parseInt(this.value)
         document.getElementById('thetaValue').innerHTML = (String(this.value + " °"))
         update()
@@ -55,6 +58,7 @@ window.onload = function () {
 
     dSlider.oninput = function () {
         d = parseInt(this.value)
+        document.getElementsByTagName('dValue').innerHTML = (String(this.value + " Å"))
         update()
     }
 
@@ -77,10 +81,53 @@ window.onload = function () {
 
     function draw_xray_source() {
         //Draw the X-ray source box.
+        // ctx.beginPath()
+        // ctx.strokeStyle = 'black'
+        // ctx.rect(XRAY_SOURCE[0], (XRAY_SOURCE[1] - (XRAY_SOURCE[3] / 2)), XRAY_SOURCE[2], XRAY_SOURCE[3])
+        // ctx.stroke()
+
+        x = XRAY_SOURCE[0] - 2
+        y = XRAY_SOURCE[1] - 45
+        mainWidth = 100
+        mainHeight = 150
+        miniWidth = 50
+        miniHeight = 50
+        coilHeight = 20
+        anodeProtusion = 40
+        ctx.lineWidth = 1.5; 
+
         ctx.beginPath()
         ctx.strokeStyle = 'black'
-        ctx.rect(XRAY_SOURCE[0], (XRAY_SOURCE[1] - (XRAY_SOURCE[3] / 2)), XRAY_SOURCE[2], XRAY_SOURCE[3])
+        ctx.rect(x,y,mainWidth,mainHeight)
         ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(x+mainWidth/4, y - anodeProtusion)
+        ctx.lineTo(x+(3*mainWidth/4), y - anodeProtusion)
+        ctx.lineTo(x+(3*mainWidth/4),y + (miniHeight / 2))
+        ctx.lineTo(x+mainWidth/4, y + (miniHeight / 2) + 50)
+        ctx.lineTo(x+mainWidth/4,y - anodeProtusion)
+        ctx.stroke()
+    
+        ctx.beginPath()
+        ctx.moveTo(x+mainWidth/4, y + mainHeight + 20)
+        ctx.lineTo(+x+mainWidth/4, y + mainHeight - coilHeight)
+        for(var i = 0; i < miniWidth/2; i++){
+            var delta = 3
+            if( i % 2 == 0){
+                ctx.lineTo((x+mainWidth/4)+(2*i), y + mainHeight - coilHeight + delta)
+            }
+            else{
+                ctx.lineTo((x+mainWidth/4)+(2*i), y + mainHeight - coilHeight - delta)
+            }
+        }
+        ctx.lineTo(x+(3*mainWidth/4)-2, y + mainHeight + 20)
+        ctx.stroke()
+        
+        ctx.beginPath()
+        ctx.strokeStyle = 'red'
+        ctx.rect(x+mainWidth - 2, y + (miniHeight / 2) ,4,50)
+        ctx.fill()
     }
 
     function drawIncidentRays() {
@@ -140,7 +187,7 @@ window.onload = function () {
 
         ctx.beginPath()
         ctx.moveTo(bottomXrayCrystalCrossX, SECOND_XRAY_Y)
-        ctx.lineTo(canvas.width - 300, SECOND_XRAY_Y)
+        ctx.lineTo(DETECTOR_POSITION, SECOND_XRAY_Y)
         ctx.stroke()
     }
 
@@ -148,18 +195,18 @@ window.onload = function () {
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0, 0])
-        ctx.rect(canvas.width - 250, XRAY_SOURCE[1] - 400, 200, 600)
-        ctx.rect(canvas.width - 300, XRAY_SOURCE[1] - 400, 0, 600)
+        ctx.rect(DETECTOR_POSITION + 50, XRAY_SOURCE[1] - 400, 200, 600)
+        ctx.rect(DETECTOR_POSITION, XRAY_SOURCE[1] - 400, 0, 600)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.arc(canvas.width - 150, SECOND_XRAY_Y, 2, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + 150, SECOND_XRAY_Y, 2, 0, 2 * Math.PI)
         ctx.fill()
 
         currentAverageY = (SECOND_XRAY_Y - bottomRefDetY + REFLECTION_POINT[1] - topRefDetY) / 2
 
         ctx.beginPath()
-        ctx.arc(canvas.width - 150, currentAverageY, 2, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + 150, currentAverageY, 2, 0, 2 * Math.PI)
         ctx.stroke()
     }
 
@@ -252,9 +299,8 @@ window.onload = function () {
     }
 
     function showCorrectDiffractionSpot() {
-        console.log("SATISIFIED CALLED")
         ctx.beginPath()
-        ctx.arc(canvas.width - 150, correctAverageY, 2, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION +  150, correctAverageY, 2, 0, 2 * Math.PI)
         ctx.fill()
 
     }
