@@ -14,8 +14,9 @@ window.onload = function () {
     const canvas = document.querySelector('canvas')
     canvas.addEventListener('mousedown', function (e) {
         getCursorPosition(canvas, e)
+        console.log("PRESS")
     })
-
+    
     width = canvas.width;
     height = canvas.height;
     gradient = 0
@@ -31,6 +32,12 @@ window.onload = function () {
     const DETECTOR_POSITION = width - 400
     const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE[3])
     const ATOM_SPACING = 40
+    const XRAY_SOURCE_OUTER_WIDTH = 100
+    const XRAY_SOURCE_OUTER_HEIGHT = 150
+    const XRAY_SOURCE_INNER_WIDTH = 50
+    const XRAY_SOURCE_INNER_HEIGHT = 50
+    const XRAY_COIL_HEIGHT = 20
+    const XRAY_ANODE_PROTRUSION = 40
 
     //VARIABLES
     var bottomXrayCrystalCrossX;
@@ -42,10 +49,31 @@ window.onload = function () {
     var bottomRefDetY;
     var isBraggSatisfied = false;
     var currentAverageY;
-    var correctAverageY;
+    var correctAverageY
+
+    //Animate the electron coming from the coil.
+    var ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
+    var ex = 65 
+    function animate(){
+        requestAnimationFrame(animate)
+        ctx.clearRect(40,400,65,200)
+        ctx.beginPath()
+        ctx.fillText("e⁻",ex,ey)
+        ctx.stroke()
+        ey -= 2
+        var anodeY = ((-1 * ex) + 50) + y + (XRAY_SOURCE_OUTER_HEIGHT/2) -5
+        if(ey < anodeY) {
+            ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
+            ex = 65 + (Math.random() * 20)
+        } 
+        draw_xray_source()
+    }
+;
 
     try { 
         update()
+
+        animate()
     }
     catch(err){
         console.log(err)
@@ -64,6 +92,7 @@ window.onload = function () {
 
     function update() {
         //Update and redraw all the parts of the canvas.
+
         ctx.clearRect(0, 0, c.width, c.height);
         radians = theta * (Math.PI / 180)
         radians_90 = (90 - theta) * (Math.PI / 180)
@@ -81,52 +110,46 @@ window.onload = function () {
 
     function draw_xray_source() {
         //Draw the X-ray source box.
-        // ctx.beginPath()
-        // ctx.strokeStyle = 'black'
-        // ctx.rect(XRAY_SOURCE[0], (XRAY_SOURCE[1] - (XRAY_SOURCE[3] / 2)), XRAY_SOURCE[2], XRAY_SOURCE[3])
-        // ctx.stroke()
-
         x = XRAY_SOURCE[0] - 2
         y = XRAY_SOURCE[1] - 45
-        mainWidth = 100
-        mainHeight = 150
-        miniWidth = 50
-        miniHeight = 50
-        coilHeight = 20
-        anodeProtusion = 40
         ctx.lineWidth = 1.5; 
 
         ctx.beginPath()
         ctx.strokeStyle = 'black'
-        ctx.rect(x,y,mainWidth,mainHeight)
+        ctx.rect(x,y,XRAY_SOURCE_OUTER_WIDTH,XRAY_SOURCE_OUTER_HEIGHT)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.moveTo(x+mainWidth/4, y - anodeProtusion)
-        ctx.lineTo(x+(3*mainWidth/4), y - anodeProtusion)
-        ctx.lineTo(x+(3*mainWidth/4),y + (miniHeight / 2))
-        ctx.lineTo(x+mainWidth/4, y + (miniHeight / 2) + 50)
-        ctx.lineTo(x+mainWidth/4,y - anodeProtusion)
+        ctx.moveTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y - XRAY_ANODE_PROTRUSION)
+        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4), y - XRAY_ANODE_PROTRUSION)
+        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4),y + (XRAY_SOURCE_INNER_HEIGHT / 2))
+        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 50)
+        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4,y - XRAY_ANODE_PROTRUSION)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4),y + (XRAY_SOURCE_INNER_HEIGHT / 2) - 5)
+        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 45)
         ctx.stroke()
     
         ctx.beginPath()
-        ctx.moveTo(x+mainWidth/4, y + mainHeight + 20)
-        ctx.lineTo(+x+mainWidth/4, y + mainHeight - coilHeight)
-        for(var i = 0; i < miniWidth/2; i++){
+        ctx.moveTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
+        ctx.lineTo(+x+XRAY_SOURCE_OUTER_WIDTH/4, y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT)
+        for(var i = 0; i < XRAY_SOURCE_INNER_WIDTH/2; i++){
             var delta = 3
             if( i % 2 == 0){
-                ctx.lineTo((x+mainWidth/4)+(2*i), y + mainHeight - coilHeight + delta)
+                ctx.lineTo((x+XRAY_SOURCE_OUTER_WIDTH/4)+(2*i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT + delta)
             }
             else{
-                ctx.lineTo((x+mainWidth/4)+(2*i), y + mainHeight - coilHeight - delta)
+                ctx.lineTo((x+XRAY_SOURCE_OUTER_WIDTH/4)+(2*i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT - delta)
             }
         }
-        ctx.lineTo(x+(3*mainWidth/4)-2, y + mainHeight + 20)
+        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4)-2, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
         ctx.stroke()
         
         ctx.beginPath()
         ctx.strokeStyle = 'red'
-        ctx.rect(x+mainWidth - 2, y + (miniHeight / 2) ,4,50)
+        ctx.rect(x+XRAY_SOURCE_OUTER_WIDTH - 2, y + (XRAY_SOURCE_INNER_HEIGHT / 2) ,4,50)
         ctx.fill()
     }
 
