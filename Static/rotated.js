@@ -16,7 +16,7 @@ window.onload = function () {
         getCursorPosition(canvas, e)
         console.log("PRESS")
     })
-    
+
     width = canvas.width;
     height = canvas.height;
     gradient = 0
@@ -53,29 +53,56 @@ window.onload = function () {
 
     //Animate the electron coming from the coil.
     var ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
-    var ex = 65 
-    function animate(){
+    var ex = 65
+    function animate() {
         requestAnimationFrame(animate)
-        ctx.clearRect(40,400,65,200)
+        ctx.clearRect(40, 400, 65, 200)
         ctx.beginPath()
-        ctx.fillText("e⁻",ex,ey)
+        ctx.fillText("e⁻", ex, ey)
         ctx.stroke()
         ey -= 2
-        var anodeY = ((-1 * ex) + 50) + y + (XRAY_SOURCE_OUTER_HEIGHT/2) -5
-        if(ey < anodeY) {
+        var anodeY = ((-1 * ex) + 50) + y + (XRAY_SOURCE_OUTER_HEIGHT / 2) - 5
+        if (ey < anodeY) {
             ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
             ex = 65 + (Math.random() * 20)
-        } 
+        }
         draw_xray_source()
     }
-;
 
-    try { 
+    boundingBoxes = [
+        {
+            name: "X-ray source",
+            description: "Generates X-ray source",
+            x: XRAY_SOURCE[0] - 2,
+            y: XRAY_SOURCE[1] - 45,
+            width: XRAY_SOURCE_OUTER_WIDTH,
+            height: XRAY_SOURCE_OUTER_HEIGHT
+        },
+        {
+            name: "Detector",
+            description: "Detects X-rays ",
+            x: DETECTOR_POSITION,  
+            y: XRAY_SOURCE[1] - 400,
+            width: 10,
+            height:  600
+        },
+        {
+            name: "Diffraction Pattern",
+            description: "What is shown on the detector",
+            x: DETECTOR_POSITION +50,  
+            y: XRAY_SOURCE[1] - 400,
+            width: 200,
+            height:  600
+        },
+    
+    ]
+
+    try {
         update()
 
         animate()
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
     thetaSlider.oninput = function () {
@@ -112,45 +139,52 @@ window.onload = function () {
         //Draw the X-ray source box.
         x = XRAY_SOURCE[0] - 2
         y = XRAY_SOURCE[1] - 45
-        ctx.lineWidth = 1.5; 
+
+        ctx.lineWidth = 1.5;
 
         ctx.beginPath()
         ctx.strokeStyle = 'black'
-        ctx.rect(x,y,XRAY_SOURCE_OUTER_WIDTH,XRAY_SOURCE_OUTER_HEIGHT)
+        ctx.rect(x, y, XRAY_SOURCE_OUTER_WIDTH, XRAY_SOURCE_OUTER_HEIGHT)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.moveTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y - XRAY_ANODE_PROTRUSION)
-        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4), y - XRAY_ANODE_PROTRUSION)
-        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4),y + (XRAY_SOURCE_INNER_HEIGHT / 2))
-        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 50)
-        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4,y - XRAY_ANODE_PROTRUSION)
+        ctx.moveTo(x + XRAY_SOURCE_OUTER_WIDTH / 4, y - XRAY_ANODE_PROTRUSION)
+        ctx.lineTo(x + (3 * XRAY_SOURCE_OUTER_WIDTH / 4), y - XRAY_ANODE_PROTRUSION)
+        ctx.lineTo(x + (3 * XRAY_SOURCE_OUTER_WIDTH / 4), y + (XRAY_SOURCE_INNER_HEIGHT / 2))
+        ctx.lineTo(x + XRAY_SOURCE_OUTER_WIDTH / 4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 50)
+        ctx.lineTo(x + XRAY_SOURCE_OUTER_WIDTH / 4, y - XRAY_ANODE_PROTRUSION)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.moveTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4),y + (XRAY_SOURCE_INNER_HEIGHT / 2) - 5)
-        ctx.lineTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 45)
+        ctx.lineWidth = 3;
+
+        ctx.moveTo(x + (3 * XRAY_SOURCE_OUTER_WIDTH / 4), y + (XRAY_SOURCE_INNER_HEIGHT / 2) - 2)
+        ctx.lineTo(x + XRAY_SOURCE_OUTER_WIDTH / 4, y + (XRAY_SOURCE_INNER_HEIGHT / 2) + 48)
         ctx.stroke()
-    
+
         ctx.beginPath()
-        ctx.moveTo(x+XRAY_SOURCE_OUTER_WIDTH/4, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
-        ctx.lineTo(+x+XRAY_SOURCE_OUTER_WIDTH/4, y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT)
-        for(var i = 0; i < XRAY_SOURCE_INNER_WIDTH/2; i++){
+        ctx.lineWidth = 1.5;
+
+        ctx.moveTo(x + XRAY_SOURCE_OUTER_WIDTH / 4, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
+        ctx.lineTo(+x + XRAY_SOURCE_OUTER_WIDTH / 4, y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT)
+        for (var i = 0; i < XRAY_SOURCE_INNER_WIDTH / 2; i++) {
             var delta = 3
-            if( i % 2 == 0){
-                ctx.lineTo((x+XRAY_SOURCE_OUTER_WIDTH/4)+(2*i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT + delta)
+            if (i % 2 == 0) {
+                ctx.lineTo((x + XRAY_SOURCE_OUTER_WIDTH / 4) + (2 * i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT + delta)
             }
-            else{
-                ctx.lineTo((x+XRAY_SOURCE_OUTER_WIDTH/4)+(2*i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT - delta)
+            else {
+                ctx.lineTo((x + XRAY_SOURCE_OUTER_WIDTH / 4) + (2 * i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT - delta)
             }
         }
-        ctx.lineTo(x+(3*XRAY_SOURCE_OUTER_WIDTH/4)-2, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
+        ctx.lineTo(x + (3 * XRAY_SOURCE_OUTER_WIDTH / 4) - 2, y + XRAY_SOURCE_OUTER_HEIGHT + 20)
         ctx.stroke()
-        
+
         ctx.beginPath()
         ctx.strokeStyle = 'red'
-        ctx.rect(x+XRAY_SOURCE_OUTER_WIDTH - 2, y + (XRAY_SOURCE_INNER_HEIGHT / 2) ,4,50)
+        ctx.rect(x + XRAY_SOURCE_OUTER_WIDTH - 2, y + (XRAY_SOURCE_INNER_HEIGHT / 2), 4, 50)
         ctx.fill()
+
+
     }
 
     function drawIncidentRays() {
@@ -160,7 +194,7 @@ window.onload = function () {
         var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE[0] - XRAY_SOURCE[2]    //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
 
         //Configure appearance of the lines
-        ctx.lineWidth = 2; 
+        ctx.lineWidth = 2;
         ctx.setLineDash([0, 0])
         ctx.strokeStyle = 'red'
 
@@ -311,20 +345,20 @@ window.onload = function () {
         d = d / 4
         factor = 11
 
-        console.log("Theta:", value)
-        console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(2))
-        console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(2))
+        // console.log("Theta:", value)
+        // console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(2))
+        // console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(2))
 
         if ((Math.sin(factor * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
             isBraggSatisfied = true
             correctAverageY = currentAverageY
-            console.log("YES")
+            //console.log("YES")
         }
     }
 
     function showCorrectDiffractionSpot() {
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION +  150, correctAverageY, 2, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + 150, correctAverageY, 2, 0, 2 * Math.PI)
         ctx.fill()
 
     }
@@ -333,4 +367,16 @@ window.onload = function () {
         x = ((-y + y1) / m) + x1
         return x
     }
+
+    canvas.addEventListener('mousemove', function (e) {
+        ctx.clearRect(0,0,500,30)
+        boundingBoxes.forEach(function(d) {
+            if ((e.clientX < (d.x + d.width)) && ((e.clientX > d.x))) {
+                if ((e.clientY < (d.y + d.height)) && ((e.clientY > d.y))) {
+                    ctx.clearRect(0,0,500,30)
+                    ctx.fillText((d.name + " " + d.description), 10, 20)
+                }
+            }
+        })
+    })
 }
