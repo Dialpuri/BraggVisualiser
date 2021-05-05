@@ -26,6 +26,7 @@ window.onload = function () {
     height = canvas.height;
 
     //----CONSTANTS----
+
     //Constants for the appearance of the crystal.
     const CRYSTAL_LENGTH = 400;
     const BRAGG_PLANES = 3;
@@ -39,11 +40,16 @@ window.onload = function () {
     const DETECTOR_POSITION = width - 600
     const DETECTOR_WIDTH = 500
 
-    const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE[3])
+    const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE.height)
 
     //Constants for the apperance of the X-ray source.
-    const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
-    const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
+    const XRAY_SOURCE = { 
+        xPos: 20, 
+        yPos: REFLECTION_POINT[1] + 15,
+        width: 100,
+        height: 150
+    }
+    const XRAY_SOURCE_X = (XRAY_SOURCE.xPos + XRAY_SOURCE.width)
     const XRAY_SOURCE_OUTER_WIDTH = 100
     const XRAY_SOURCE_OUTER_HEIGHT = 150
     const XRAY_SOURCE_INNER_WIDTH = 50
@@ -65,7 +71,7 @@ window.onload = function () {
     var gradient;
 
     //Animate the electron coming from the coil.
-    var ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
+    var ey = XRAY_SOURCE.yPos - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
     var ex = 65
 
     function animate() {
@@ -78,7 +84,7 @@ window.onload = function () {
         ey -= 2
         var anodeY = ((-1 * ex) + 50) + y + (XRAY_SOURCE_OUTER_HEIGHT / 2) - 5
         if (ey < anodeY) {
-            ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
+            ey = XRAY_SOURCE.yPos - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
             ex = 65 + (Math.random() * 20)
         }
         draw_xray_source()
@@ -88,8 +94,8 @@ window.onload = function () {
     boundingBoxes = [{
             name: "X-ray source",
             description: "Generates X-ray source",
-            x: XRAY_SOURCE[0] - 2,
-            y: XRAY_SOURCE[1] - 45,
+            x: XRAY_SOURCE.xPos - 2,
+            y: XRAY_SOURCE.yPos - 45,
             width: XRAY_SOURCE_OUTER_WIDTH,
             height: XRAY_SOURCE_OUTER_HEIGHT
         },
@@ -98,7 +104,7 @@ window.onload = function () {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
             x: DETECTOR_POSITION,
-            y: XRAY_SOURCE[1] - 400,
+            y: XRAY_SOURCE.yPos - 400,
             width: 500,
             height: 600
         },
@@ -151,8 +157,8 @@ window.onload = function () {
     }
     //Draw the X-ray source box.
     function draw_xray_source() {
-        x = XRAY_SOURCE[0] - 2
-        y = XRAY_SOURCE[1] - 45
+        x = XRAY_SOURCE.xPos - 2
+        y = XRAY_SOURCE.yPos - 45
 
         ctx.lineWidth = 1.5;
 
@@ -282,7 +288,7 @@ window.onload = function () {
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0, 0])
-        ctx.rect(DETECTOR_POSITION, XRAY_SOURCE[1] - 400, DETECTOR_WIDTH, 600)
+        ctx.rect(DETECTOR_POSITION, XRAY_SOURCE.yPos - 400, DETECTOR_WIDTH, 600)
         ctx.stroke()
 
         ctx.beginPath()
@@ -444,12 +450,7 @@ window.onload = function () {
         boundingBoxes.forEach(function (d) {
             if ((pos.x < (d.x + d.width)) && ((pos.x > d.x))) {
                 if ((pos.y < (d.y + d.height)) && ((pos.y > d.y))) {
-
                     document.getElementById('information').innerHTML = (d.name + " " + d.description)
-
-                    // ctx.rect(10,0,500,75)
-                    // ctx.font = "18px Verdana";
-                    // ctx.fillText((d.name + " " + d.description), 10, 30)
                 }
             }
         })
