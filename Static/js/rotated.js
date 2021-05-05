@@ -1,12 +1,14 @@
 // Created by Jordan Dialpuri 2021, jsd523@york.ac.uk
 
 window.onload = function () {
+    //Initialise links to the HTML file
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     var thetaSlider = document.getElementById('theta');
     var dSlider = document.getElementById('d');
     var wavelengthSlider = document.getElementById('wavelength')
 
+    //FOR DEBUGGING ONLY 
     function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect()
         const x = event.clientX - rect.left
@@ -19,22 +21,29 @@ window.onload = function () {
         getCursorPosition(canvas, e)
     })
 
+    //Initialise key variables first
     width = canvas.width;
     height = canvas.height;
-    gradient = 0
 
-    //CONSTANTS
+    //----CONSTANTS----
+    //Constants for the appearance of the crystal.
     const CRYSTAL_LENGTH = 400;
     const BRAGG_PLANES = 3;
+    const ATOM_SPACING = 40
+
     const CENTRAL_X = width / 2;
     const CENTRAL_Y = height / 2;
     const REFLECTION_POINT = [CENTRAL_X - 300, CENTRAL_Y + 100]; // Change this to change the position of the diagram
-    const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
-    const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
+
+    //Constants for the appearance and positioning of the detector panel.
     const DETECTOR_POSITION = width - 600
     const DETECTOR_WIDTH = 500
+
     const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE[3])
-    const ATOM_SPACING = 40
+
+    //Constants for the apperance of the X-ray source.
+    const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
+    const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
     const XRAY_SOURCE_OUTER_WIDTH = 100
     const XRAY_SOURCE_OUTER_HEIGHT = 150
     const XRAY_SOURCE_INNER_WIDTH = 50
@@ -53,10 +62,12 @@ window.onload = function () {
     var correctPos;
     var passthroughCoords;
     var refractedCoords;
+    var gradient;
 
     //Animate the electron coming from the coil.
     var ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
     var ex = 65
+
     function animate() {
         requestAnimationFrame(animate)
         ctx.clearRect(40, 400, 65, 200)
@@ -73,8 +84,8 @@ window.onload = function () {
         draw_xray_source()
     }
 
-    boundingBoxes = [
-        {
+    //Bounding boxes for the appearance of tooltips, a rectangle surrounding the area. 
+    boundingBoxes = [{
             name: "X-ray source",
             description: "Generates X-ray source",
             x: XRAY_SOURCE[0] - 2,
@@ -82,26 +93,27 @@ window.onload = function () {
             width: XRAY_SOURCE_OUTER_WIDTH,
             height: XRAY_SOURCE_OUTER_HEIGHT
         },
-        
+
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
-            x: DETECTOR_POSITION,  
+            x: DETECTOR_POSITION,
             y: XRAY_SOURCE[1] - 400,
             width: 500,
-            height:  600
+            height: 600
         },
-    
+
     ]
 
+    //Safe trial of the animation and update.
     try {
         update()
-
         animate()
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
+
+    //----HTML SLIDER INPUTS----
     thetaSlider.oninput = function () {
         theta = parseInt(this.value)
         document.getElementById('thetaValue').innerHTML = (String(this.value + " °"))
@@ -113,16 +125,15 @@ window.onload = function () {
         document.getElementById('dValue').innerHTML = (String(this.value + " Å"))
         update()
     }
-    
-    wavelengthSlider.oninput = function() {
+
+    wavelengthSlider.oninput = function () {
         wavelength = parseInt(this.value)
         document.getElementById('wavelengthValue').innerHTML = (String(this.value + " nm"))
         update()
     }
 
+    //Update and redraw all the parts of the canvas, called everytime a slider changes.
     function update() {
-        //Update and redraw all the parts of the canvas.
-
         ctx.clearRect(0, 0, c.width, c.height);
         radians = theta * (Math.PI / 180)
         radians_90 = (90 - theta) * (Math.PI / 180)
@@ -131,16 +142,15 @@ window.onload = function () {
         drawIncidentRays()
         drawRefractedRays()
         draw_xray_passthrough()
-        output()
+        draw_detector()
         draw_s()
         check_bragg(theta, d)
         if (isBraggSatisfied == true) {
-            showCorrectDiffractionSpot()
+            draw_correct_diffraction_spot()
         }
     }
-
+    //Draw the X-ray source box.
     function draw_xray_source() {
-        //Draw the X-ray source box.
         x = XRAY_SOURCE[0] - 2
         y = XRAY_SOURCE[1] - 45
 
@@ -175,8 +185,7 @@ window.onload = function () {
             var delta = 3
             if (i % 2 == 0) {
                 ctx.lineTo((x + XRAY_SOURCE_OUTER_WIDTH / 4) + (2 * i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT + delta)
-            }
-            else {
+            } else {
                 ctx.lineTo((x + XRAY_SOURCE_OUTER_WIDTH / 4) + (2 * i), y + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT - delta)
             }
         }
@@ -191,10 +200,10 @@ window.onload = function () {
 
     }
 
+    //Draw the indident rays coming from the X-ray source.
     function drawIncidentRays() {
-        //Draw the indident rays coming from the X-ray source. 
         var topXRayLength = REFLECTION_POINT[0] - XRAY_SOURCE_X //Calculate the length of the top incident X-ray, because it is at 0 degrees no pythag needed.
-        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X   //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
+        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
         //Configure appearance of the lines
         ctx.lineWidth = 2;
         ctx.setLineDash([0, 0])
@@ -218,13 +227,14 @@ window.onload = function () {
     function drawRefractedRays() {
 
         var topXRayLength = REFLECTION_POINT[0] - XRAY_SOURCE_X //Calculate the length of the top incident X-ray, because it is at 0 degrees no pythag needed.
-        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X   //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
+        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
 
+        //Displacement of the incident X-ray with equal length to the incident rays.
         var topYDisplacement = topXRayLength * Math.sin(2 * radians)
         var bottomYDisplacement = bottomXRayLength * Math.sin(2 * radians)
         var topXDisplacment = topXRayLength * Math.cos(2 * radians)
         var bottomXDisplacement = bottomXRayLength * Math.cos(2 * radians)
-        
+
         ctx.lineWidth = 2;
 
         ctx.beginPath();
@@ -237,8 +247,9 @@ window.onload = function () {
         ctx.lineTo(bottomXrayCrystalCrossX + bottomXDisplacement, SECOND_XRAY_Y - bottomYDisplacement)
         ctx.stroke()
 
-        refractedCoords = { 
-            x: bottomXrayCrystalCrossX + bottomXDisplacement, 
+        //Dictionary of end of the bottom refracted ray for use with the s vector arrow.
+        refractedCoords = {
+            x: bottomXrayCrystalCrossX + bottomXDisplacement,
             y: SECOND_XRAY_Y - bottomYDisplacement
         }
 
@@ -246,23 +257,28 @@ window.onload = function () {
         sinWave(bottomXrayCrystalCrossX, SECOND_XRAY_Y, 2 * theta, bottomXRayLength, -1)
     }
 
+    //Draw the x-ray that goes through the crytal.
     function draw_xray_passthrough() {
 
         ctx.setLineDash([5, 4])
         ctx.strokeStyle = 'red'
-        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X   //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
+        var bottomXRayLength = bottomXrayCrystalCrossX - XRAY_SOURCE_X //Calculate the length of the bottom incident X-ray, because it is at 0 degrees no pythag needed.
 
         ctx.beginPath()
         ctx.moveTo(bottomXrayCrystalCrossX, SECOND_XRAY_Y)
         ctx.lineTo(bottomXrayCrystalCrossX + bottomXRayLength, SECOND_XRAY_Y)
+
+        //Dictionary of end of the passthrough ray for use with the s vector arrow.
         passthroughCoords = {
             x: bottomXrayCrystalCrossX + bottomXRayLength,
             y: SECOND_XRAY_Y
         }
+
         ctx.stroke()
     }
 
-    function output() {
+    //Draw the detector with diffraction spots. 
+    function draw_detector() {
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0, 0])
@@ -270,7 +286,7 @@ window.onload = function () {
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH/2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
         ctx.fill()
 
         deltaPos = {
@@ -279,13 +295,14 @@ window.onload = function () {
         }
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
         ctx.stroke()
 
 
     }
 
+    //Calculate the rotation of the sin waves that are required
     function rotate(cx, cy, x, y, angle) {
         var radians = (Math.PI / 180) * angle,
             cos = Math.cos(radians),
@@ -295,8 +312,8 @@ window.onload = function () {
         return [nx, ny];
     }
 
+    //Draw sin waves from a starting coordinate with length lineLength and with positive or negative sign.
     function sinWave(startX, startY, angle, lineLength, amplitudeSign) {
-
         ctx.beginPath();
         ctx.lineWidth = 1;
 
@@ -311,12 +328,14 @@ window.onload = function () {
         ctx.stroke();
     }
 
-    function draw_s(){ 
-        ctx.beginPath() 
+    //Draw the s arrow from the end of the passthrough x-ray to the bottom incident ray.
+    function draw_s() {
+        ctx.beginPath()
         canvas_arrow(ctx, passthroughCoords.x - 2, passthroughCoords.y - 2, refractedCoords.x + 2, refractedCoords.y + 2)
         ctx.stroke()
     }
 
+    //Draw arrow template.
     function canvas_arrow(context, fromx, fromy, tox, toy) {
         var headlen = 10; // length of head in pixels
         var dx = tox - fromx;
@@ -327,10 +346,10 @@ window.onload = function () {
         context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
         context.moveTo(tox, toy);
         context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-      }
+    }
 
+    //Draw the crystal with distance d and rotation theta. 
     function draw_crystal(d) {
-
         ctx.setLineDash([0, 0])
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'black';
@@ -371,13 +390,13 @@ window.onload = function () {
 
                 bottomXrayCrystalCrossX = calculateGradient(ax, bx, SECOND_XRAY_Y, gradient)
             }
-            
+
             ctx.stroke()
         }
     }
 
+    //Checks if the bragg equation has been satisified. sin(theta) = wavelength/2d.
     function check_bragg(value, d) {
-
         n = 1
         d = d / 10
         factor = 1
@@ -388,38 +407,44 @@ window.onload = function () {
 
         if ((Math.sin(factor * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
             isBraggSatisfied = true
-            correctPos = { x: DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x,y: SECOND_XRAY_Y - deltaPos.y}
+            correctPos = {
+                x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x,
+                y: SECOND_XRAY_Y - deltaPos.y
+            }
         }
     }
 
-    function showCorrectDiffractionSpot() {
+    //Draws the diffraction spot that satisifies the bragg equation.
+    function draw_correct_diffraction_spot() {
         ctx.beginPath()
         ctx.arc(correctPos.x, correctPos.y, 3, 0, 2 * Math.PI)
         ctx.fill()
-
     }
 
+    //Calcluate the gradient of the x-ray crystal to determine where the bottom incident x-ray should reflect from. 
     function calculateGradient(x1, y1, y, m) {
         x = ((-y + y1) / m) + x1
         return x
     }
 
+    //Gets correct XY coordinates for use in tooltips with CSS.
     function getXY(canvas, event) {
-        var rect = canvas.getBoundingClientRect();  // absolute position of canvas
+        var rect = canvas.getBoundingClientRect(); // absolute position of canvas
         return {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
         }
     }
 
+    //Event listener for mouse movements which checks array of boundingBoxes to get which tooltip to show if any. 
     canvas.addEventListener('mousemove', function (e) {
-        ctx.clearRect(0,0,500,75)
+        ctx.clearRect(0, 0, 500, 75)
         document.getElementById('information').innerHTML = ""
         var pos = getXY(canvas, e)
-        boundingBoxes.forEach(function(d) {
+        boundingBoxes.forEach(function (d) {
             if ((pos.x < (d.x + d.width)) && ((pos.x > d.x))) {
                 if ((pos.y < (d.y + d.height)) && ((pos.y > d.y))) {
-                    
+
                     document.getElementById('information').innerHTML = (d.name + " " + d.description)
 
                     // ctx.rect(10,0,500,75)
