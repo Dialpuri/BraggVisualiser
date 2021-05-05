@@ -13,8 +13,8 @@ body {
 
 .canvasBorder { 
     background-color:#E5E5E5;
-    position: relative;
-    padding: 50px;
+   /* // position: relative; */
+    padding: 10px;
     width: 100%;
     height: 100%;
 }
@@ -22,9 +22,7 @@ body {
 .canvas {
     background-color: #E5E5E5;
     padding:0px;
-    float:left;
-
-    /* display: block; */
+    display:-webkit-inline-box;
     margin: 0px auto;
     border: 2px solid black;
 }
@@ -35,12 +33,13 @@ body {
 }
 
 .slidecontainer{    
+    display: block;
     float:left;
     padding: 0 30 30 30;
     width: 200px;
     color:black;
     border: 2px solid black;
-
+    margin: 10px;
 }
 
 .slider {

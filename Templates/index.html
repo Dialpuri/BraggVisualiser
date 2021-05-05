@@ -7,24 +7,25 @@
 
 <body>
 
-<div class = "canvasBorder" width="1000">
+<div class = "canvasBorder" width="1400">
     <h1 class = "title">X-ray diffraction</h1>
-    <canvas id="myCanvas" class = "canvas" width="1000px" height="700px">
+    <canvas id="myCanvas" class = "canvas" width="1400px" height="700px">
     Your browser does not support the HTML canvas tag.</canvas>
 
     <div class="slidecontainer">
         <h2 class = "sliderTitle">Adjust variables</h2>
         θ
-        <input type="range" min="4" max="19.8" step = "0.1" value="12" class="slider" id="theta" />  
-        <label id = "thetaValue">12 °</label>
+        <input type="range" min="15" max="38" step = "0.1" value="22" class="slider" id="theta" />  
+        <label id = "thetaValue">30 °</label>
         <p></p>
-        D
-        <input type="range" min="25" max="50" step = "1" value="50" class="slider" id="d"/>
-        <label id = "dValue">50 Å</label>
-
-        <!-- Wavelength
-        <input type="range" min="50" max="200" step = "1" value="50" class="slider" id="wavelength">
-        -->
+        d
+        <input type="range" min="25" max="45" step = "1" value="35" class="slider" id="d"/>
+        <label id = "dValue">45 Å</label>
+        <p></p>
+        λ
+        <input type="range" min="2" max="6" step = "1" value="4" class="slider" id="wavelength"/>
+        <label id = "wavelengthValue">2 nm</label>
+        
     </div>
 </div>
 </body>
