@@ -86,9 +86,9 @@ window.onload = function () {
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
-            x: DETECTOR_POSITION + 50,  
+            x: DETECTOR_POSITION,  
             y: XRAY_SOURCE[1] - 400,
-            width: 200,
+            width: 500,
             height:  600
         },
     
@@ -414,13 +414,17 @@ window.onload = function () {
 
     canvas.addEventListener('mousemove', function (e) {
         ctx.clearRect(0,0,500,75)
+        document.getElementById('information').innerHTML = ""
         var pos = getXY(canvas, e)
         boundingBoxes.forEach(function(d) {
             if ((pos.x < (d.x + d.width)) && ((pos.x > d.x))) {
                 if ((pos.y < (d.y + d.height)) && ((pos.y > d.y))) {
-                    ctx.rect(10,0,500,75)
-                    ctx.font = "18px Verdana";
-                    ctx.fillText((d.name + " " + d.description), 10, 30)
+                    
+                    document.getElementById('information').innerHTML = (d.name + " " + d.description)
+
+                    // ctx.rect(10,0,500,75)
+                    // ctx.font = "18px Verdana";
+                    // ctx.fillText((d.name + " " + d.description), 10, 30)
                 }
             }
         })
