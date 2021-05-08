@@ -7,6 +7,10 @@ window.onload = function () {
     var dSlider = document.getElementById('d');
     var wavelengthSlider = document.getElementById('wavelength')
 
+    var ce = document.getElementById("ewald");
+    var ctxe = ce.getContext("2d");
+
+
     function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect()
         const x = event.clientX - rect.left
@@ -24,11 +28,10 @@ window.onload = function () {
     gradient = 0
 
     //CONSTANTS
+    const CENTER_POINT = { x: width / 2, y: height / 2 }
     const CRYSTAL_LENGTH = 400;
     const BRAGG_PLANES = 3;
-    const CENTRAL_X = width / 2;
-    const CENTRAL_Y = height / 2;
-    const REFLECTION_POINT = [CENTRAL_X - 300, CENTRAL_Y + 100]; // Change this to change the position of the diagram
+    const REFLECTION_POINT = [CENTER_POINT.x - 300, CENTER_POINT.y + 100]; // Change this to change the position of the diagram
     const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
     const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
     const DETECTOR_POSITION = width - 600
@@ -41,18 +44,20 @@ window.onload = function () {
     const XRAY_SOURCE_INNER_HEIGHT = 50
     const XRAY_COIL_HEIGHT = 20
     const XRAY_ANODE_PROTRUSION = 40
+    const WAVELENGTH_FACTOR = 1000
+    const D_FACTOR = 1000
 
     //VARIABLES
     var bottomXrayCrystalCrossX;
-    var radians;
-    var radians_90;
-    var d = 45;
+    var radians, radians_90;
+    var d, inverseD;
     var theta = 30;
     var wavelength = 2;
     var isBraggSatisfied = false;
     var correctPos;
     var passthroughCoords;
     var refractedCoords;
+    var inverseWavelength;
 
     //Animate the electron coming from the coil.
     var ey = XRAY_SOURCE[1] - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
@@ -82,16 +87,16 @@ window.onload = function () {
             width: XRAY_SOURCE_OUTER_WIDTH,
             height: XRAY_SOURCE_OUTER_HEIGHT
         },
-        
+
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
-            x: DETECTOR_POSITION,  
+            x: DETECTOR_POSITION,
             y: XRAY_SOURCE[1] - 400,
             width: 500,
-            height:  600
+            height: 600
         },
-    
+
     ]
 
     try {
@@ -103,19 +108,22 @@ window.onload = function () {
         console.log(err)
     }
     thetaSlider.oninput = function () {
-        theta = parseInt(this.value)
+        theta = parseFloat(this.value)
         document.getElementById('thetaValue').innerHTML = (String(this.value + " °"))
         update()
     }
 
     dSlider.oninput = function () {
-        d = parseInt(this.value)
+        d = parseFloat(this.value)
+        inverseD = (1/d) * D_FACTOR
         document.getElementById('dValue').innerHTML = (String(this.value + " Å"))
         update()
     }
-    
-    wavelengthSlider.oninput = function() {
-        wavelength = parseInt(this.value)
+
+    wavelengthSlider.oninput = function () {
+        wavelength = parseFloat(this.value)
+        inverseWavelength = (1/wavelength) * WAVELENGTH_FACTOR
+
         document.getElementById('wavelengthValue').innerHTML = (String(this.value + " nm"))
         update()
     }
@@ -124,19 +132,26 @@ window.onload = function () {
         //Update and redraw all the parts of the canvas.
 
         ctx.clearRect(0, 0, c.width, c.height);
+        ctxe.clearRect(0, 0, ce.width, ce.height);
+
         radians = theta * (Math.PI / 180)
         radians_90 = (90 - theta) * (Math.PI / 180)
-        draw_crystal(parseInt(d), theta)
+        draw_crystal()
         draw_xray_source()
         drawIncidentRays()
         drawRefractedRays()
         draw_xray_passthrough()
         output()
         draw_s()
-        check_bragg(theta, d)
+        check_bragg(d)
+        draw_circle()
+        draw_horizontal_lines()
+        draw_angled_lines()
+        draw_d_line()
         if (isBraggSatisfied == true) {
             showCorrectDiffractionSpot()
         }
+        
     }
 
     function draw_xray_source() {
@@ -224,7 +239,7 @@ window.onload = function () {
         var bottomYDisplacement = bottomXRayLength * Math.sin(2 * radians)
         var topXDisplacment = topXRayLength * Math.cos(2 * radians)
         var bottomXDisplacement = bottomXRayLength * Math.cos(2 * radians)
-        
+
         ctx.lineWidth = 2;
 
         ctx.beginPath();
@@ -237,8 +252,8 @@ window.onload = function () {
         ctx.lineTo(bottomXrayCrystalCrossX + bottomXDisplacement, SECOND_XRAY_Y - bottomYDisplacement)
         ctx.stroke()
 
-        refractedCoords = { 
-            x: bottomXrayCrystalCrossX + bottomXDisplacement, 
+        refractedCoords = {
+            x: bottomXrayCrystalCrossX + bottomXDisplacement,
             y: SECOND_XRAY_Y - bottomYDisplacement
         }
 
@@ -270,7 +285,7 @@ window.onload = function () {
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH/2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
         ctx.fill()
 
         deltaPos = {
@@ -279,7 +294,7 @@ window.onload = function () {
         }
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
         ctx.stroke()
 
@@ -311,8 +326,8 @@ window.onload = function () {
         ctx.stroke();
     }
 
-    function draw_s(){ 
-        ctx.beginPath() 
+    function draw_s() {
+        ctx.beginPath()
         canvas_arrow(ctx, passthroughCoords.x - 2, passthroughCoords.y - 2, refractedCoords.x + 2, refractedCoords.y + 2)
         ctx.stroke()
     }
@@ -327,9 +342,9 @@ window.onload = function () {
         context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
         context.moveTo(tox, toy);
         context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-      }
+    }
 
-    function draw_crystal(d) {
+    function draw_crystal() {
 
         ctx.setLineDash([0, 0])
         ctx.lineWidth = 2;
@@ -342,8 +357,8 @@ window.onload = function () {
             var x = Math.sin(radians_90) * (CRYSTAL_LENGTH / 2)
             var y = Math.cos(radians_90) * (CRYSTAL_LENGTH / 2)
 
-            var dx = d * Math.cos(radians_90)
-            var dy = d * Math.sin(radians_90)
+            var dx = (d * 8) * Math.cos(radians_90)
+            var dy = (d * 8) * Math.sin(radians_90)
 
             var arcx = ATOM_SPACING * Math.cos(radians_90)
             var arcy = ATOM_SPACING * Math.sin(radians_90)
@@ -371,24 +386,21 @@ window.onload = function () {
 
                 bottomXrayCrystalCrossX = calculateGradient(ax, bx, SECOND_XRAY_Y, gradient)
             }
-            
+
             ctx.stroke()
         }
     }
 
-    function check_bragg(value, d) {
+    function check_bragg(d) {
 
-        n = 1
-        d = d / 10
         factor = 1
-
-        console.log("Theta:", value)
+        console.log("Theta:", theta)
         console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(2))
         console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(2))
 
         if ((Math.sin(factor * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
             isBraggSatisfied = true
-            correctPos = { x: DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x,y: SECOND_XRAY_Y - deltaPos.y}
+            correctPos = { x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y }
         }
     }
 
@@ -397,6 +409,44 @@ window.onload = function () {
         ctx.arc(correctPos.x, correctPos.y, 3, 0, 2 * Math.PI)
         ctx.fill()
 
+    }
+
+    function draw_circle() {
+        ctxe.beginPath()
+        ctxe.arc(CENTER_POINT.x, CENTER_POINT.y, inverseWavelength, 0, Math.PI * 2)
+        ctxe.stroke()
+    }
+
+    function draw_horizontal_lines() {
+        var left_edge = CENTER_POINT.x - inverseWavelength
+        var right_edge = CENTER_POINT.x + inverseWavelength
+        ctxe.beginPath()
+        ctxe.moveTo(left_edge, CENTER_POINT.y)
+        ctxe.lineTo(right_edge, CENTER_POINT.y)
+        ctxe.stroke()
+    }
+
+    function draw_angled_lines() {
+
+        var deltaX = inverseWavelength * Math.cos(2 * radians)
+        var deltaY = inverseWavelength * Math.sin(2 * radians)
+
+        ctxe.beginPath()
+        ctxe.moveTo(CENTER_POINT.x, CENTER_POINT.y)
+        ctxe.lineTo(CENTER_POINT.x + deltaX, CENTER_POINT.y - deltaY)
+        ctxe.stroke()
+    }
+
+    function draw_d_line() {
+        var right_edge = CENTER_POINT.x + inverseWavelength
+
+        var deltaX = inverseD * Math.cos(radians_90)
+        var deltaY = inverseD * Math.sin(radians_90)
+
+        ctxe.beginPath()
+        ctxe.moveTo(right_edge, CENTER_POINT.y)
+        ctxe.lineTo(right_edge - deltaX, CENTER_POINT.y - deltaY)
+        ctxe.stroke()
     }
 
     function calculateGradient(x1, y1, y, m) {
@@ -413,18 +463,13 @@ window.onload = function () {
     }
 
     canvas.addEventListener('mousemove', function (e) {
-        ctx.clearRect(0,0,500,75)
+        ctx.clearRect(0, 0, 500, 75)
         document.getElementById('information').innerHTML = ""
         var pos = getXY(canvas, e)
-        boundingBoxes.forEach(function(d) {
+        boundingBoxes.forEach(function (d) {
             if ((pos.x < (d.x + d.width)) && ((pos.x > d.x))) {
                 if ((pos.y < (d.y + d.height)) && ((pos.y > d.y))) {
-                    
                     document.getElementById('information').innerHTML = (d.name + " " + d.description)
-
-                    // ctx.rect(10,0,500,75)
-                    // ctx.font = "18px Verdana";
-                    // ctx.fillText((d.name + " " + d.description), 10, 30)
                 }
             }
         })
