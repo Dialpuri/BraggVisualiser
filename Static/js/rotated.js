@@ -96,17 +96,16 @@ window.onload = function () {
             width: 500,
             height: 600
         },
-
     ]
 
     try {
         update()
-
         animate()
     }
     catch (err) {
         console.log(err)
     }
+
     thetaSlider.oninput = function () {
         theta = parseFloat(this.value)
         document.getElementById('thetaValue').innerHTML = (String(this.value + " °"))
@@ -115,22 +114,20 @@ window.onload = function () {
 
     dSlider.oninput = function () {
         d = parseFloat(this.value)
-        inverseD = (1/d) * D_FACTOR
+        inverseD = (1 / d) * D_FACTOR
         document.getElementById('dValue').innerHTML = (String(this.value + " Å"))
         update()
     }
 
     wavelengthSlider.oninput = function () {
         wavelength = parseFloat(this.value)
-        inverseWavelength = (1/wavelength) * WAVELENGTH_FACTOR
-
+        inverseWavelength = (1 / wavelength) * WAVELENGTH_FACTOR
         document.getElementById('wavelengthValue').innerHTML = (String(this.value + " nm"))
         update()
     }
 
     function update() {
         //Update and redraw all the parts of the canvas.
-
         ctx.clearRect(0, 0, c.width, c.height);
         ctxe.clearRect(0, 0, ce.width, ce.height);
 
@@ -151,7 +148,6 @@ window.onload = function () {
         if (isBraggSatisfied == true) {
             showCorrectDiffractionSpot()
         }
-        
     }
 
     function draw_xray_source() {
@@ -202,8 +198,6 @@ window.onload = function () {
         ctx.strokeStyle = 'red'
         ctx.rect(x + XRAY_SOURCE_OUTER_WIDTH - 2, y + (XRAY_SOURCE_INNER_HEIGHT / 2), 4, 50)
         ctx.fill()
-
-
     }
 
     function drawIncidentRays() {
@@ -408,7 +402,6 @@ window.onload = function () {
         ctx.beginPath()
         ctx.arc(correctPos.x, correctPos.y, 3, 0, 2 * Math.PI)
         ctx.fill()
-
     }
 
     function draw_circle() {
@@ -427,7 +420,6 @@ window.onload = function () {
     }
 
     function draw_angled_lines() {
-
         var deltaX = inverseWavelength * Math.cos(2 * radians)
         var deltaY = inverseWavelength * Math.sin(2 * radians)
 
