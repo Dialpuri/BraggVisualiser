@@ -27,11 +27,15 @@ body {
 }
 
 .information {
-    display: block;
-    float: left;
+    /* display: block; */
+    /* float: left; */
     margin-top: 40px;
     width: 200px;
     color: white;
+    text-align: center;   
+    font-family: Arial, sans-serif;
+    font-size: 20;
+
     /* border: 2px solid black; */
 }
 

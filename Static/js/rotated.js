@@ -63,15 +63,15 @@ window.onload = function () {
     //VARIABLES
     var bottomXrayCrystalCrossX;
     var radians, radians_90;
-    var d = 5
-    var inverseD;
+    var d = 5;
+    var inverseD = (1/5) * D_FACTOR;
     var theta = 30;
     var wavelength = 5;
     var isBraggSatisfied = false;
-    var correctPos;
+    var correctPos = [];
     var passthroughCoords;
     var refractedCoords;
-    var inverseWavelength = 1/5;
+    var inverseWavelength = 0.2 * WAVELENGTH_FACTOR;
     var gradient;
 
     //Animate the electron coming from the coil.
@@ -139,7 +139,6 @@ window.onload = function () {
     wavelengthSlider.oninput = function () {
         wavelength = parseFloat(this.value)
         inverseWavelength = (1 / wavelength) * WAVELENGTH_FACTOR
-        wavelength = parseInt(this.value)
         document.getElementById('wavelengthValue').innerHTML = (String(this.value + " nm"))
         update()
     }
@@ -160,7 +159,9 @@ window.onload = function () {
         draw_detector()
         draw_s()
         check_bragg(d)
+        console.log(inverseWavelength)
         draw_circle()
+        draw_labels()
         draw_horizontal_lines()
         draw_angled_lines()
         draw_d_line()
@@ -409,7 +410,7 @@ window.onload = function () {
             ctx.stroke()
         }
     }
-
+    
     //Checks if the bragg equation has been satisified. sin(theta) = wavelength/2d.
     function check_bragg(d) {
         n = 1
@@ -420,20 +421,35 @@ window.onload = function () {
 
         if ((Math.sin(factor * radians).toFixed(3)) == (wavelength / (2 * d)).toFixed(3)) {
             isBraggSatisfied = true
-            correctPos = { x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y }
+            correctPos.push({ x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
         }
     }
 
     //Draws the diffraction spot that satisifies the bragg equation.
     function draw_correct_diffraction_spot() {
-        ctx.beginPath()
-        ctx.arc(correctPos.x, correctPos.y, 3, 0, 2 * Math.PI)
-        ctx.fill()
+        console.log("CALLED")
+        for(i = 0; i < correctPos.length; i++) {
+            ctx.beginPath()
+            ctx.arc(correctPos[i].x, correctPos[i].y, 3, 0, 2 * Math.PI)
+            ctx.fill()
+        }
     }
 
     function draw_circle() {
         ctxe.beginPath()
         ctxe.arc(EW_CENTER_POINT.x, EW_CENTER_POINT.y, inverseWavelength, 0, Math.PI * 2)
+        ctxe.stroke()
+    }
+
+    function draw_labels() { 
+        ctxe.beginPath()
+        ctxe.font = "12px Verdana"
+        ctxe.fillText("A", EW_CENTER_POINT.x, EW_CENTER_POINT.y + 15)
+        ctxe.fillText("O", EW_CENTER_POINT.x + inverseWavelength + 10, EW_CENTER_POINT.y + 6)
+        ctxe.fillText("1/λ", EW_CENTER_POINT.x - (inverseWavelength/2) - 5, EW_CENTER_POINT.y + 15)
+        canvas_arrow(ctxe,EW_CENTER_POINT.x - (inverseWavelength/2) - 5, EW_CENTER_POINT.y + 9, EW_CENTER_POINT.x - inverseWavelength + 5, EW_CENTER_POINT.y + 9)
+        canvas_arrow(ctxe,EW_CENTER_POINT.x - (inverseWavelength/2) + 15, EW_CENTER_POINT.y + 9, EW_CENTER_POINT.x - 5, EW_CENTER_POINT.y + 9)
+
         ctxe.stroke()
     }
 
