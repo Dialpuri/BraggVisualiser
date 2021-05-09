@@ -28,65 +28,68 @@ window.onload = function () {
     //Initialise key variables first
     width = canvas.width;
     height = canvas.height;
-
+    ewidth = ce.width
+    eheight = ce.height
     //CONSTANTS
     const CENTER_POINT = { x: width / 2, y: height / 2 }
+    const EW_CENTER_POINT = { x: ewidth / 2, y: eheight / 2 }
     const CRYSTAL_LENGTH = 400;
     const BRAGG_PLANES = 3;
     const REFLECTION_POINT = [CENTER_POINT.x - 300, CENTER_POINT.y + 100]; // Change this to change the position of the diagram
-    const XRAY_SOURCE = [20, REFLECTION_POINT[1] + 15, 100, 150] // xPos, yPos, width, height
-    const XRAY_SOURCE_X = (XRAY_SOURCE[0] + XRAY_SOURCE[2])
+    
     const DETECTOR_POSITION = width - 600
     const DETECTOR_WIDTH = 500
 
-    const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE.height)
+    const ATOM_SPACING = 40
 
     //Constants for the apperance of the X-ray source.
     const XRAY_SOURCE = { 
-        xPos: 20, 
+        xPos: 50, 
         yPos: REFLECTION_POINT[1] + 15,
         width: 100,
         height: 150
     }
     const XRAY_SOURCE_X = (XRAY_SOURCE.xPos + XRAY_SOURCE.width)
+    const SECOND_XRAY_Y = REFLECTION_POINT[1] + (0.25 * XRAY_SOURCE.height)
     const XRAY_SOURCE_OUTER_WIDTH = 100
     const XRAY_SOURCE_OUTER_HEIGHT = 150
     const XRAY_SOURCE_INNER_WIDTH = 50
     const XRAY_SOURCE_INNER_HEIGHT = 50
     const XRAY_COIL_HEIGHT = 20
     const XRAY_ANODE_PROTRUSION = 40
-    const WAVELENGTH_FACTOR = 1000
-    const D_FACTOR = 1000
+    const WAVELENGTH_FACTOR = 500
+    const D_FACTOR = 500
 
     //VARIABLES
     var bottomXrayCrystalCrossX;
     var radians, radians_90;
-    var d, inverseD;
+    var d = 5
+    var inverseD;
     var theta = 30;
-    var wavelength = 2;
+    var wavelength = 5;
     var isBraggSatisfied = false;
     var correctPos;
     var passthroughCoords;
     var refractedCoords;
-    var inverseWavelength;
+    var inverseWavelength = 1/5;
     var gradient;
 
     //Animate the electron coming from the coil.
     var ey = XRAY_SOURCE.yPos - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
-    var ex = 65
+    var ex = 80
 
     function animate() {
         requestAnimationFrame(animate)
-        ctx.clearRect(40, 400, 65, 200)
+        ctx.clearRect(70, 300, 65, 500)
         ctx.beginPath()
         ctx.font = "12px Verdana";
         ctx.fillText("e⁻", ex, ey)
         ctx.stroke()
         ey -= 2
-        var anodeY = ((-1 * ex) + 50) + y + (XRAY_SOURCE_OUTER_HEIGHT / 2) - 5
+        var anodeY = ((-1 * ex) + 80) + y + (XRAY_SOURCE_OUTER_HEIGHT / 2) - 5
         if (ey < anodeY) {
             ey = XRAY_SOURCE.yPos - 45 + XRAY_SOURCE_OUTER_HEIGHT - XRAY_COIL_HEIGHT
-            ex = 65 + (Math.random() * 20)
+            ex = 80 + (Math.random() * 20)
         }
         draw_xray_source()
     }
@@ -109,7 +112,6 @@ window.onload = function () {
             width: 500,
             height: 600
         },
-
     ]
 
     //Safe trial of the animation and update.
@@ -123,14 +125,14 @@ window.onload = function () {
     //----HTML SLIDER INPUTS----
     thetaSlider.oninput = function () {
         theta = parseFloat(this.value)
-        document.getElementById('thetaValue').innerHTML = (String(this.value + " °"))
+        document.getElementById('thetaValue').innerHTML = (String(theta.toFixed(2) + " °"))
         update()
     }
 
     dSlider.oninput = function () {
         d = parseFloat(this.value)
         inverseD = (1 / d) * D_FACTOR
-        document.getElementById('dValue').innerHTML = (String(this.value + " Å"))
+        document.getElementById('dValue').innerHTML = (String(d.toFixed(2) + " Å"))
         update()
     }
 
@@ -313,8 +315,6 @@ window.onload = function () {
         ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
         ctx.stroke()
-
-
     }
 
     //Calculate the rotation of the sin waves that are required
@@ -364,7 +364,7 @@ window.onload = function () {
     }
 
     //Draw the crystal with distance d and rotation theta. 
-    function draw_crystal(d) {
+    function draw_crystal() {
         ctx.setLineDash([0, 0])
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'black';
@@ -411,15 +411,14 @@ window.onload = function () {
     }
 
     //Checks if the bragg equation has been satisified. sin(theta) = wavelength/2d.
-    function check_bragg(value, d) {
+    function check_bragg(d) {
         n = 1
-        d = d / 10
         factor = 1
         console.log("Theta:", theta)
-        console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(2))
-        console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(2))
+        console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(3))
+        console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(3))
 
-        if ((Math.sin(factor * radians).toFixed(2)) == (wavelength / (2 * d)).toFixed(2)) {
+        if ((Math.sin(factor * radians).toFixed(3)) == (wavelength / (2 * d)).toFixed(3)) {
             isBraggSatisfied = true
             correctPos = { x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y }
         }
@@ -434,16 +433,16 @@ window.onload = function () {
 
     function draw_circle() {
         ctxe.beginPath()
-        ctxe.arc(CENTER_POINT.x, CENTER_POINT.y, inverseWavelength, 0, Math.PI * 2)
+        ctxe.arc(EW_CENTER_POINT.x, EW_CENTER_POINT.y, inverseWavelength, 0, Math.PI * 2)
         ctxe.stroke()
     }
 
     function draw_horizontal_lines() {
-        var left_edge = CENTER_POINT.x - inverseWavelength
-        var right_edge = CENTER_POINT.x + inverseWavelength
+        var left_edge = EW_CENTER_POINT.x - inverseWavelength
+        var right_edge = EW_CENTER_POINT.x + inverseWavelength
         ctxe.beginPath()
-        ctxe.moveTo(left_edge, CENTER_POINT.y)
-        ctxe.lineTo(right_edge, CENTER_POINT.y)
+        ctxe.moveTo(left_edge, EW_CENTER_POINT.y)
+        ctxe.lineTo(right_edge, EW_CENTER_POINT.y)
         ctxe.stroke()
     }
 
@@ -452,20 +451,20 @@ window.onload = function () {
         var deltaY = inverseWavelength * Math.sin(2 * radians)
 
         ctxe.beginPath()
-        ctxe.moveTo(CENTER_POINT.x, CENTER_POINT.y)
-        ctxe.lineTo(CENTER_POINT.x + deltaX, CENTER_POINT.y - deltaY)
+        ctxe.moveTo(EW_CENTER_POINT.x, EW_CENTER_POINT.y)
+        ctxe.lineTo(EW_CENTER_POINT.x + deltaX, EW_CENTER_POINT.y - deltaY)
         ctxe.stroke()
     }
 
     function draw_d_line() {
-        var right_edge = CENTER_POINT.x + inverseWavelength
+        var right_edge = EW_CENTER_POINT.x + inverseWavelength
 
         var deltaX = inverseD * Math.cos(radians_90)
         var deltaY = inverseD * Math.sin(radians_90)
 
         ctxe.beginPath()
-        ctxe.moveTo(right_edge, CENTER_POINT.y)
-        ctxe.lineTo(right_edge - deltaX, CENTER_POINT.y - deltaY)
+        ctxe.moveTo(right_edge, EW_CENTER_POINT.y)
+        ctxe.lineTo(right_edge - deltaX, EW_CENTER_POINT.y - deltaY)
         ctxe.stroke()
     }
 
