@@ -1,4 +1,4 @@
-# BraggVisualiser
+# Bragg Visualiser
 
 ## Testing locally
 * Download or clone project
