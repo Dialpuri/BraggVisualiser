@@ -321,7 +321,10 @@ window.onload = function () {
 
         ctx.beginPath()
         ctx.arc(DIFF_PATTERN.x + (DIFF_PATTERN.width / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
+
+        //Arrow between origin spot and diffracted spot
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
+        
         ctx.stroke()
 
         ctx.font = "bold 16px Verdana"
@@ -377,22 +380,30 @@ window.onload = function () {
 
     //Draw the crystal with distance d and rotation theta. 
     function draw_crystal() {
+        //Set style of line
         ctx.setLineDash([0, 0])
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'black';
         indent = 200
+
+        //Calculate number of atoms using formula
         numberOfAtoms = (CRYSTAL_LENGTH / ATOM_SPACING) + 1
 
+        //Loop through all bragg planes
         for (var i = 0; i < BRAGG_PLANES; i++) {
-
+            //Calculate the x and y points for that theta reflection
             var x = Math.sin(radians_90) * (CRYSTAL_LENGTH / 2)
             var y = Math.cos(radians_90) * (CRYSTAL_LENGTH / 2)
 
+            //Calculate the distance between the layers in x and y form (not at an angle)
             var dx = (d * 8) * Math.cos(radians_90)
             var dy = (d * 8) * Math.sin(radians_90)
 
+            //Calculat the positions of the arcs which denote atoms
             var arcx = ATOM_SPACING * Math.cos(radians_90)
             var arcy = ATOM_SPACING * Math.sin(radians_90)
+
+            //Loop through all the atoms that should be drawn
 
             for (var j = 0; j < numberOfAtoms; j++) {
                 ctx.beginPath()
@@ -405,19 +416,22 @@ window.onload = function () {
             }
             ctx.beginPath()
 
+            //Positions of starting and end x and y for the lines  for use in gradient calcualtion and drawing
             ax = REFLECTION_POINT[0] + x + (i * dx)
             bx = REFLECTION_POINT[1] - y + (i * dy)
             cx = REFLECTION_POINT[0] - x + (i * dx)
             dx = REFLECTION_POINT[1] + y + (i * dy)
 
+            //Draw the crystal lines
             ctx.moveTo(ax, bx)
             ctx.lineTo(cx, dx)
-            if (i == 1) {
-                gradient = (dx - bx) / (ax - cx)
 
+            //If on the second plane (not the surface)
+            if (i == 1) {
+                //Calculate the gradient and then set the x position of where the bottom X-ray beam crosses that line.
+                gradient = (dx - bx) / (ax - cx)
                 bottomXrayCrystalCrossX = calculateGradient(ax, bx, SECOND_XRAY_Y, gradient)
             }
-
             ctx.stroke()
         }
     }
@@ -451,14 +465,18 @@ window.onload = function () {
         }
     }
 
+    //EWALD CANVAS DRAW FUNCTIONS
+
+    //Draw the circle with 1/wavelength radius
     function draw_circle() {
         ctxe.beginPath()
         ctxe.arc(EW_CENTER_POINT.x, EW_CENTER_POINT.y, inverseWavelength, 0, Math.PI * 2)
         ctxe.stroke()
     }
 
+    //Draw all the labels around the circle
     function draw_labels() { 
-
+        //Calculate some of the mid and endpoints of lines to get rough positions for the labels
         var bottomThetaX = ((inverseWavelength/6) + 6) * Math.cos(degToRad(0.5 * theta))
         var bottomThetaY = ((inverseWavelength/6) + 6) *  Math.sin(degToRad(0.5 * theta))
         var topThetaX = ((inverseWavelength/6) + 8) * Math.cos(degToRad(1.5 * theta))
@@ -466,9 +484,8 @@ window.onload = function () {
         var dX = (inverseD/2) * Math.cos(radians_90)
         var dY = (inverseD/2) * Math.sin(radians_90)
 
-
         ctxe.beginPath()
-        ctxe.font = "12px Verdana"
+        ctxe.font = "12px Verdana" //Can change font here
         ctxe.fillText("A", EW_CENTER_POINT.x, EW_CENTER_POINT.y + 15)
         ctxe.fillText("O", EW_CENTER_POINT.x + inverseWavelength + 10, EW_CENTER_POINT.y + 6)
         ctxe.fillText("1/λ", EW_CENTER_POINT.x - (inverseWavelength/2) - 5, EW_CENTER_POINT.y + 15)
@@ -476,21 +493,23 @@ window.onload = function () {
         canvas_arrow(ctxe,EW_CENTER_POINT.x - (inverseWavelength/2) + 15, EW_CENTER_POINT.y + 9, EW_CENTER_POINT.x - 5, EW_CENTER_POINT.y + 9)
         ctxe.fillText("θ", EW_CENTER_POINT.x + bottomThetaX, EW_CENTER_POINT.y - bottomThetaY + 5)
         ctxe.fillText("θ", EW_CENTER_POINT.x + topThetaX, EW_CENTER_POINT.y - topThetaY )
-
         ctxe.fillText("d*ₕₖₗ", EW_CENTER_POINT.x + inverseWavelength - dX - 30, EW_CENTER_POINT.y - dY)
-
         ctxe.stroke()
     }
 
+    //Draw the line that spans the diameter (2/wavelength).
     function draw_horizontal_lines() {
+        //Calculate x coord of the left and right edge (y is constant)
         var left_edge = EW_CENTER_POINT.x - inverseWavelength
         var right_edge = EW_CENTER_POINT.x + inverseWavelength
+
         ctxe.beginPath()
         ctxe.moveTo(left_edge, EW_CENTER_POINT.y)
         ctxe.lineTo(right_edge, EW_CENTER_POINT.y)
         ctxe.stroke()
     }
 
+    //Draw the line of angle 2theta aswell as the arcs that show where the angle theta is.
     function draw_angled_lines() {
         var deltaX = inverseWavelength * Math.cos(2 * radians)
         var deltaY = inverseWavelength * Math.sin(2 * radians)
@@ -498,20 +517,22 @@ window.onload = function () {
         var halfDeltaX = (inverseWavelength/2) * Math.cos(radians)
         var halfDeltaY = (inverseWavelength/2) * Math.sin(radians)
 
+        //Draw line with 2theta
         ctxe.beginPath()
         ctxe.moveTo(EW_CENTER_POINT.x, EW_CENTER_POINT.y)
         ctxe.lineTo(EW_CENTER_POINT.x + deltaX, EW_CENTER_POINT.y - deltaY)
         ctxe.stroke()
 
+        //Draw dashed middle line (with theta angle)
         ctxe.beginPath()
         ctxe.setLineDash([2,4])
         ctxe.moveTo(EW_CENTER_POINT.x, EW_CENTER_POINT.y)
         ctxe.lineTo(EW_CENTER_POINT.x + halfDeltaX, EW_CENTER_POINT.y - halfDeltaY)
         ctxe.stroke()
 
+        //Draw the arcs
         ctxe.beginPath()
         ctxe.setLineDash([0,0])
-
         ctxe.arc(EW_CENTER_POINT.x,EW_CENTER_POINT.y, inverseWavelength/6, degToRad(0) , degToRad(360-(theta)),true)
         ctxe.stroke()
         ctxe.beginPath()
@@ -519,13 +540,10 @@ window.onload = function () {
         ctxe.stroke()
     }
 
-    function degToRad(value) { 
-        return value * (Math.PI/180)
-    }
-
+    //Draw the line d which has 1/d length
     function draw_d_line() {
+        //Calculate x and y endpoints and starting position
         var right_edge = EW_CENTER_POINT.x + inverseWavelength
-
         var deltaX = inverseD * Math.cos(radians_90)
         var deltaY = inverseD * Math.sin(radians_90)
 
@@ -533,6 +551,13 @@ window.onload = function () {
         ctxe.moveTo(right_edge, EW_CENTER_POINT.y)
         ctxe.lineTo(right_edge - deltaX, EW_CENTER_POINT.y - deltaY)
         ctxe.stroke()
+    }
+
+    //OTHER FUNCTIONS (UTILITIES)
+
+    //Function to convert degrees to radians -> returns radians 
+    function degToRad(value) { 
+        return value * (Math.PI/180)
     }
 
     //Calcluate the gradient of the x-ray crystal to determine where the bottom incident x-ray should reflect from. 
