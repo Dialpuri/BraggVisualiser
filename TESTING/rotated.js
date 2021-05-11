@@ -66,7 +66,7 @@ window.onload = function () {
     var d = 5;
     var inverseD = (1/5) * D_FACTOR;
     var theta = 30;
-    var wavelength = 5;
+    var wavelength = 3;
     var isBraggSatisfied = false;
     var correctPos = [];
     var passthroughCoords;
@@ -149,8 +149,8 @@ window.onload = function () {
         ctx.clearRect(0, 0, c.width, c.height);
         ctxe.clearRect(0, 0, ce.width, ce.height);
 
-        radians = theta * (Math.PI / 180)
-        radians_90 = (90 - theta) * (Math.PI / 180)
+        radians = degToRad(theta)
+        radians_90 = degToRad(90 - theta) 
         draw_crystal()
         draw_xray_source()
         drawIncidentRays()
@@ -159,12 +159,12 @@ window.onload = function () {
         draw_detector()
         draw_s()
         check_bragg(d)
-        console.log(inverseWavelength)
         draw_circle()
         draw_labels()
         draw_horizontal_lines()
         draw_angled_lines()
         draw_d_line()
+
         if (isBraggSatisfied == true) {
             draw_correct_diffraction_spot()
         }
@@ -430,10 +430,6 @@ window.onload = function () {
         }
     }
 
-    function roundToThree(num) {    
-        return +(Math.round(num + "e+3")  + "e-3");
-    }
-
     //Draws the diffraction spot that satisifies the bragg equation.
     function draw_correct_diffraction_spot() {
         console.log("CALLED")
@@ -510,8 +506,6 @@ window.onload = function () {
         ctxe.beginPath()
         ctxe.arc(EW_CENTER_POINT.x,EW_CENTER_POINT.y, (inverseWavelength/6) + 5, degToRad(360-(theta)) , degToRad(360-(2*theta)),true)
         ctxe.stroke()
-
-
     }
 
     function degToRad(value) { 
