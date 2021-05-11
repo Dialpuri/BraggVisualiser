@@ -28,16 +28,16 @@ window.onload = function () {
     //Initialise key variables first
     width = canvas.width;
     height = canvas.height;
-    ewidth = ce.width
-    eheight = ce.height
+    ewidth = ce.width;
+    eheight = ce.height;
+
     //CONSTANTS
     const CENTER_POINT = { x: width / 2, y: height / 2 }
     const EW_CENTER_POINT = { x: ewidth / 2, y: eheight / 2 }
     const CRYSTAL_LENGTH = 400;
     const BRAGG_PLANES = 3;
     const REFLECTION_POINT = [CENTER_POINT.x - 300, CENTER_POINT.y + 100]; // Change this to change the position of the diagram
-    
-    
+
     //Constants for the apperance of the X-ray source.
     const XRAY_SOURCE = { 
         xPos: 50, 
@@ -110,7 +110,6 @@ window.onload = function () {
             width: XRAY_SOURCE_OUTER_WIDTH,
             height: XRAY_SOURCE_OUTER_HEIGHT
         },
-
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
@@ -121,7 +120,7 @@ window.onload = function () {
         },
     ]
 
-    //Safe trial of the animation and update.
+    //Safe trial of the animation and update (animate can carry on and lag browser).
     try {
         update()
         animate()
