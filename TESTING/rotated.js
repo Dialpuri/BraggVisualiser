@@ -37,9 +37,6 @@ window.onload = function () {
     const BRAGG_PLANES = 3;
     const REFLECTION_POINT = [CENTER_POINT.x - 300, CENTER_POINT.y + 100]; // Change this to change the position of the diagram
     
-    const DETECTOR_POSITION = width - 600
-    const DETECTOR_WIDTH = 500
-
     const ATOM_SPACING = 40
 
     //Constants for the apperance of the X-ray source.
@@ -57,6 +54,14 @@ window.onload = function () {
     const XRAY_SOURCE_INNER_HEIGHT = 50
     const XRAY_COIL_HEIGHT = 20
     const XRAY_ANODE_PROTRUSION = 40
+
+    const DETECTOR = {
+        x: width - 600,
+        y: XRAY_SOURCE.yPos - 400,
+        width: 500,
+        height: 600
+    }
+
     const WAVELENGTH_FACTOR = 500
     const D_FACTOR = 500
 
@@ -107,7 +112,7 @@ window.onload = function () {
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
-            x: DETECTOR_POSITION,
+            x: DETECTOR.x,
             y: XRAY_SOURCE.yPos - 400,
             width: 500,
             height: 600
@@ -300,11 +305,11 @@ window.onload = function () {
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0, 0])
-        ctx.rect(DETECTOR_POSITION, XRAY_SOURCE.yPos - 400, DETECTOR_WIDTH, 600)
+        ctx.rect(DETECTOR.x, DETECTOR.y, DETECTOR.width, DETECTOR.height)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR.x + (DETECTOR.width / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
         ctx.fill()
 
         deltaPos = {
@@ -313,9 +318,13 @@ window.onload = function () {
         }
 
         ctx.beginPath()
-        ctx.arc(DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
+        ctx.arc(DETECTOR.x + (DETECTOR.width / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
         ctx.stroke()
+
+        ctx.font = "bold 16px Verdana"
+        ctx.fillText("Diffraction Pattern", DETECTOR.x + (0.5 * DETECTOR.width) - 90, 50)
+        
     }
 
     //Calculate the rotation of the sin waves that are required
@@ -425,7 +434,7 @@ window.onload = function () {
 
         if ((Math.sin(factor * radians).toFixed(3)) == (wavelength / (2 * d)).toFixed(3)) {
             isBraggSatisfied = true
-            correctPos.push({ x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
+            correctPos.push({ x: DETECTOR.x + (DETECTOR.width / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
             document.getElementById("sidebar").style.background="green";
         }
     }
