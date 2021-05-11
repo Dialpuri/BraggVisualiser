@@ -1,4 +1,4 @@
-// Created by Jordan Dialpuri 2021, jsd523@york.ac.uk
+//© Jordan Dialpuri 2021
 
 window.onload = function () {
     //Initialise links to the HTML file
