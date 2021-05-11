@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <div class="slidecontainer">
+    <div class="slidecontainer" id = "sidebar">
 
         <!-- <a href="/ewald"> -->
         <h1 class="title">X-ray diffraction</h1>
@@ -25,8 +25,15 @@
         <label id="wavelengthValue">3 nm</label>
         <p></p>
         <div class="information">
-            <label id="information"> </label>
+             <label id="information"> </label>
         </div>
+
+        <div class = "braggEquation">
+            2dsin(θ) = <label id = "2dsintheta"></label>
+            <p></p>
+            nλ = <label id = "nlambda"></label>
+        </div>
+
     </div>
 
     <div class="container" width="1400">

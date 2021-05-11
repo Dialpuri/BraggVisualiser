@@ -415,14 +415,23 @@ window.onload = function () {
     function check_bragg(d) {
         n = 1
         factor = 1
-        console.log("Theta:", theta)
-        console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(3))
-        console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(3))
+        // console.log("Theta:", theta)
+        // console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(3))
+        // console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(3))
+
+        document.getElementById('2dsintheta').innerHTML = parseFloat(2 * d * (Math.sin(factor * radians))).toPrecision(3)
+        document.getElementById('nlambda').innerHTML = parseFloat(n * wavelength).toPrecision(3)
+        document.getElementById("sidebar").style.background="black";
 
         if ((Math.sin(factor * radians).toFixed(3)) == (wavelength / (2 * d)).toFixed(3)) {
             isBraggSatisfied = true
             correctPos.push({ x: DETECTOR_POSITION + (DETECTOR_WIDTH / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
+            document.getElementById("sidebar").style.background="green";
         }
+    }
+
+    function roundToThree(num) {    
+        return +(Math.round(num + "e+3")  + "e-3");
     }
 
     //Draws the diffraction spot that satisifies the bragg equation.
