@@ -1,7 +1,8 @@
 # Bragg Visualiser
 
 ## Testing locally
-* Download or clone project
+* Press the green code button and download zip
+* Unzip the file
 * Navigate to TESTING/index.html and open with a web browser
 
 ## Testing with Flask server
