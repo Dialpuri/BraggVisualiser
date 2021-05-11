@@ -37,8 +37,7 @@ window.onload = function () {
     const BRAGG_PLANES = 3;
     const REFLECTION_POINT = [CENTER_POINT.x - 300, CENTER_POINT.y + 100]; // Change this to change the position of the diagram
     
-    const ATOM_SPACING = 40
-
+    
     //Constants for the apperance of the X-ray source.
     const XRAY_SOURCE = { 
         xPos: 50, 
@@ -54,14 +53,17 @@ window.onload = function () {
     const XRAY_SOURCE_INNER_HEIGHT = 50
     const XRAY_COIL_HEIGHT = 20
     const XRAY_ANODE_PROTRUSION = 40
-
-    const DETECTOR = {
+    
+    //Constants for the apperance of the diffraction pattern.
+    const DIFF_PATTERN = {
         x: width - 600,
         y: XRAY_SOURCE.yPos - 400,
         width: 500,
         height: 600
     }
 
+    //Other constants
+    const ATOM_SPACING = 40
     const WAVELENGTH_FACTOR = 500
     const D_FACTOR = 500
 
@@ -112,7 +114,7 @@ window.onload = function () {
         {
             name: "Diffraction Pattern",
             description: "What is shown on the detector",
-            x: DETECTOR.x,
+            x: DIFF_PATTERN.x,
             y: XRAY_SOURCE.yPos - 400,
             width: 500,
             height: 600
@@ -305,11 +307,11 @@ window.onload = function () {
         ctx.beginPath()
         ctx.strokeStyle = 'black'
         ctx.setLineDash([0, 0])
-        ctx.rect(DETECTOR.x, DETECTOR.y, DETECTOR.width, DETECTOR.height)
+        ctx.rect(DIFF_PATTERN.x, DIFF_PATTERN.y, DIFF_PATTERN.width, DIFF_PATTERN.height)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.arc(DETECTOR.x + (DETECTOR.width / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
+        ctx.arc(DIFF_PATTERN.x + (DIFF_PATTERN.width / 2), SECOND_XRAY_Y, 3, 0, 2 * Math.PI)
         ctx.fill()
 
         deltaPos = {
@@ -318,12 +320,12 @@ window.onload = function () {
         }
 
         ctx.beginPath()
-        ctx.arc(DETECTOR.x + (DETECTOR.width / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
+        ctx.arc(DIFF_PATTERN.x + (DIFF_PATTERN.width / 2) - deltaPos.x, SECOND_XRAY_Y - deltaPos.y, 3, 0, 2 * Math.PI)
         //canvas_arrow(ctx,DETECTOR_POSITION + (DETECTOR_WIDTH/2) - 2, SECOND_XRAY_Y - 2 , DETECTOR_POSITION + (DETECTOR_WIDTH/2) - deltaPos.x + 5, SECOND_XRAY_Y - deltaPos.y + 5)
         ctx.stroke()
 
         ctx.font = "bold 16px Verdana"
-        ctx.fillText("Diffraction Pattern", DETECTOR.x + (0.5 * DETECTOR.width) - 90, 50)
+        ctx.fillText("Diffraction Pattern", DIFF_PATTERN.x + (0.5 * DIFF_PATTERN.width) - 90, 50)
         
     }
 
@@ -428,13 +430,13 @@ window.onload = function () {
         // console.log("Radians:", Math.sin(factor * radians), Math.sin(factor * radians).toFixed(3))
         // console.log("Bragg:", wavelength / (2 * d), (wavelength / (2 * d)).toFixed(3))
 
-        document.getElementById('2dsintheta').innerHTML = parseFloat(2 * d * (Math.sin(factor * radians))).toPrecision(3)
-        document.getElementById('nlambda').innerHTML = parseFloat(n * wavelength).toPrecision(3)
+        document.getElementById('2dsintheta').innerHTML = parseFloat(2 * d * (Math.sin(factor * radians))).toPrecision(4)
+        document.getElementById('nlambda').innerHTML = parseFloat(n * wavelength).toPrecision(4)
         document.getElementById("sidebar").style.background="black";
 
         if ((Math.sin(factor * radians).toFixed(3)) == (wavelength / (2 * d)).toFixed(3)) {
             isBraggSatisfied = true
-            correctPos.push({ x: DETECTOR.x + (DETECTOR.width / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
+            correctPos.push({ x: DIFF_PATTERN.x + (DIFF_PATTERN.width / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
             document.getElementById("sidebar").style.background="green";
         }
     }
