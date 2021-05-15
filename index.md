@@ -1,37 +1,54 @@
-## Welcome to GitHub Pages
+<!-- © Jordan Dialpuri 2021 -->
 
-You can use the [editor on GitHub](https://github.com/Dialpuri/BraggVisualiser/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+<html>
+<head>
+    <script type="text/javascript" src="../static/js/rotated.js"></script>
+    <link rel="stylesheet" href="../static/css/stylesheet.css">
+</head>
+<body>
+    <div class="slidecontainer" id = "sidebar">
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+        <!-- <a href="/ewald"> -->
+        <h1 class="title">X-ray diffraction</h1>
+        <!-- </a> -->
+        <h2 class="sliderTitle">Adjust variables</h2>
+        θ
+        <input type="range" min="15" max="38" step="0.1" value="22" class="slider" id="theta" />
+        <label id="thetaValue">30.00 °</label>
+        <p></p>
+        d
+        <input type="range" min="3" max="10" step="0.25" value="5" class="slider" id="d" />
+        <label id="dValue">5.00 Å</label>
+        <p></p>
+        λ
+        <input type="range" min="3" max="6" step="1" value="3" class="slider" id="wavelength" />
+        <label id="wavelengthValue">3 nm</label>
+        <p></p>
+        <div class="information">
+             <label id="information"> </label>
+        </div>
+        <h2 class="sliderTitle">Bragg Equation</h2>
 
-### Markdown
+        <div class = "braggEquation">
+            2dsin(θ) = <label id = "2dsintheta"></label>
+            <p></p>
+            nλ = <label id = "nlambda"></label>
+        </div>
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+        <div class = "credits">
+            © Jordan Dialpuri 2021
+        </div>
 
-```markdown
-Syntax highlighted code block
+    </div>
 
-# Header 1
-## Header 2
-### Header 3
+    <div class="container" width="1400">
+        <canvas id="myCanvas" class="canvas" width="1400px" height="700px">
+            Your browser does not support the HTML canvas tag.</canvas>
+        <p></p>
+        <canvas id="ewald" class="ewaldCanvas" width="400px" height="400px">Your browser does not support the HTML
+            canvas tag.</canvas>
+    </div>
 
-- Bulleted
-- List
+</body>
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Dialpuri/BraggVisualiser/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+</html>
