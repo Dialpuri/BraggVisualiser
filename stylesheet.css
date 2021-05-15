@@ -1,0 +1,120 @@
+/* © Jordan Dialpuri 2021 */
+
+body {
+    background: #E5E5E5;
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.title {
+    font-size: 30;
+    color: white;
+    text-align: center
+}
+
+.slidecontainer {
+    height: 100%;
+    width: 15%;
+    min-width: 350px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #111;
+    color: white;
+    overflow-x: hidden;
+    padding-top: 20px;
+    /* padding: 5px; */
+}
+
+.information {
+    /* display: block; */
+    /* float: left; */
+    margin-top: 40px;
+    width: 200px;
+    color: white;
+    text-align: center;   
+    font-family: Arial, sans-serif;
+    font-size: 20;
+
+    /* border: 2px solid black; */
+}
+
+.container {
+    background-color: #E5E5E5;
+    display: flex;
+    /* flex:1; */
+    /* overflow-y:auto; */
+    margin: auto;
+    /* padding: 10px; */
+    width: 80%;
+    height: 100%;
+    margin-left: 15%;
+    flex-direction: column;
+    align-items:baseline;
+}
+
+.canvas {
+    background-color: #E5E5E5;
+    padding: 0px;
+    margin: 4px auto;
+    border: 2px solid black;
+    width: 1025px;
+    height: 525px;
+    /* flex: 1 1 auto; */
+    align-items:center;
+}
+
+.ewaldCanvas {
+    background-color: #E5E5E5;
+    padding: 0px;
+    margin: 0px auto;
+    border: 2px solid black;
+    width: 400px;
+    height: 400px;
+    /* flex: 1 1 auto; */
+    align-items:center;
+
+}
+
+.sliderTitle {
+    color: white;
+    float: center;
+}
+
+.credits { 
+    position: fixed;
+    width: 350px;
+    bottom: 10;
+    text-align: center;
+    font-size: 10
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75%;
+    height: 15;
+    border-radius: 10px;
+    background: #d3d3d2;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity .2s;
+    padding: 5px;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #457EAC;
+    cursor: pointer;
+    border-radius: 50%;
+}
