@@ -43,15 +43,12 @@ body {
 
 .container {
     background-color: #E5E5E5;
-    display: flex;
     /* flex:1; */
     /* overflow-y:auto; */
     margin: auto;
     /* padding: 10px; */
-    width: 80%;
-    height: 100%;
-    margin-left: 15%;
-    flex-direction: column;
+    width: 100vh;
+    margin-left: 400px;
     align-items:baseline;
 }
 
