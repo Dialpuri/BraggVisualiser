@@ -1,5 +1,8 @@
 # Bragg Visualiser
 
+## Webpage
+Check out the live version [here](https://dialpuri.github.io/BraggVisualiser/) :)
+
 ## Testing with Flask server
 * Download or clone project
 * Make sure python and flask is installed
