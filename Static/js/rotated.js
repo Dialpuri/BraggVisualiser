@@ -68,6 +68,7 @@ window.onload = function () {
     const D_FACTOR = 500
 
     //VARIABLES
+    var re = new RegExp('/^\d+\.?\d*$/');
     var bottomXrayCrystalCrossX;
     var radians, radians_90;
     var d = 5;
@@ -131,8 +132,23 @@ window.onload = function () {
     //----HTML SLIDER INPUTS----
     thetaSlider.oninput = function () {
         theta = parseFloat(this.value)
-        document.getElementById('thetaValue').innerHTML = (String(theta.toFixed(2) + " °"))
+        document.getElementById('thetaValueText').value = (String(theta.toFixed(2) + " °"))
         update()
+    }
+  
+
+    thetaValueText.onchange = function( ){
+
+        theta = parseFloat(this.value)
+        if (re.test(this.value)){
+            document.getElementById('thetaValueText').style.color = 'white'
+            console.log("allowed")
+        }
+        else {
+            console.log("Not allowed")
+            document.getElementById('thetaValueText').style.color = 'red';
+        }
+        console.log(theta)
     }
 
     dSlider.oninput = function () {
