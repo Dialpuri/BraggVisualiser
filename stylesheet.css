@@ -14,6 +14,15 @@ body {
     text-align: center
 }
 
+
+.inputBox { 
+    width: 45px; height: 32px; color: white; background-color: black; border-color: black;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 15;
+    display:inline-block;
+}
+
 .slidecontainer {
     height: 100%;
     width: 15%;
