@@ -5,9 +5,9 @@
     <script type="text/javascript" src="rotated.js"></script>
     <link rel="stylesheet" href="stylesheet.css">
     <link rel="icon" href="favicon.ico">
-
 </head>
 <body>
+    <title>Bragg Visualiser</title>
     <div class="slidecontainer" id = "sidebar">
 
         <!-- <a href="/ewald"> -->
@@ -16,11 +16,15 @@
         <h2 class="sliderTitle">Adjust variables</h2>
         θ
         <input type="range" min="15" max="38" step="0.1" value="22" class="slider" id="theta" />
-        <label id="thetaValue">30.00 °</label>
+        <!-- <label id="thetaValue">30.00 °</label> -->
+        <input type="text" id="thetaValueText" name="thetaValue" value = "30.00" class = "inputBox" style = "border:0"/><span style="margin-left:2px;">°</span>
         <p></p>
-        d
-        <input type="range" min="3" max="10" step="0.25" value="5" class="slider" id="d" />
-        <label id="dValue">5.00 Å</label>
+        <div style= "text-align: center;">
+            d
+            <input type="range" min="3" max="10" step="0.25" value="5" class="slider" id="d" />
+            <!-- <label id="dValue">5.00 Å</label> -->
+            <input type="text" id="dValueText" name="dValue" value = "5.00" class = "inputBox" style = "border:0"/><span style="margin-left:2px;font-size: 14">Å</span>
+         </div>
         <p></p>
         λ
         <input type="range" min="3" max="6" step="1" value="3" class="slider" id="wavelength" />
@@ -54,7 +58,5 @@
         <canvas id="ewald" class="ewaldCanvas" width="400px" height="400px">Your browser does not support the HTML
             canvas tag.</canvas>
     </div>
-
 </body>
-
 </html>

@@ -7,10 +7,12 @@ window.onload = function () {
     var thetaSlider = document.getElementById('theta');
     var dSlider = document.getElementById('d');
     var wavelengthSlider = document.getElementById('wavelength')
-
+    
+    var thetaTextBox = document.getElementById('thetaValueText')
+    var dTextBox = document.getElementById('dValueText')
+    
     var ce = document.getElementById("ewald");
     var ctxe = ce.getContext("2d");
-
 
     //FOR DEBUGGING ONLY 
     function getCursorPosition(canvas, event) {
@@ -68,6 +70,7 @@ window.onload = function () {
     const D_FACTOR = 500
 
     //VARIABLES
+    var regex = /^(0|[1-9]\d*)(\.\d+)?$/
     var bottomXrayCrystalCrossX;
     var radians, radians_90;
     var d = 5;
@@ -131,14 +134,48 @@ window.onload = function () {
     //----HTML SLIDER INPUTS----
     thetaSlider.oninput = function () {
         theta = parseFloat(this.value)
-        document.getElementById('thetaValue').innerHTML = (String(theta.toFixed(2) + " °"))
+        thetaTextBox.value = (String(theta.toFixed(2) + " °"))
         update()
+    }
+  
+    thetaValueText.onchange = function( ){
+        theta = parseFloat(this.value)
+        if ((this.value).match(regex)){
+            thetaTextBox.style.color = 'white'
+            console.log("allowed")
+        }
+        else {
+            console.log("Not allowed")
+            thetaTextBox.style.color = 'red';
+        }
+        console.log(theta)
+    }
+
+    dValueText.onchange = function () { 
+        regex_check = (this.value).match(regex)
+        if (this.value <= 10 && this.value >= 3 && regex_check) {
+            dTextBox.style.color = "white"
+            d = parseFloat(this.value)
+            inverseD = (1 / d) * D_FACTOR
+            dTextBox.value = (String(d.toFixed(2)))
+            update()
+            dSlider.value = d
+        }
+        else {
+            if (this.value > 10 && regex_check) {
+                dSlider.value = 10
+            }
+            else if (this.value < 3 && regex_check) { 
+                dSlider.value = 3
+            }
+            dTextBox.style.color = "red"
+        }
     }
 
     dSlider.oninput = function () {
         d = parseFloat(this.value)
         inverseD = (1 / d) * D_FACTOR
-        document.getElementById('dValue').innerHTML = (String(d.toFixed(2) + " Å"))
+        dTextBox.value = (String(d.toFixed(2)))
         update()
     }
 
@@ -451,12 +488,17 @@ window.onload = function () {
             isBraggSatisfied = true
             correctPos.push({ x: DIFF_PATTERN.x + (DIFF_PATTERN.width / 2) - deltaPos.x, y: SECOND_XRAY_Y - deltaPos.y })
             document.getElementById("sidebar").style.background="green";
+            thetaTextBox.style.background = 'green';
+            dTextBox.style.background = 'green';
+        }
+        else {
+            thetaTextBox.style.background = 'black';
+            dTextBox.style.background = 'black';
         }
     }
 
     //Draws the diffraction spot that satisifies the bragg equation.
     function draw_correct_diffraction_spot() {
-        console.log("CALLED")
         for(i = 0; i < correctPos.length; i++) {
             ctx.beginPath()
             ctx.arc(correctPos[i].x, correctPos[i].y, 3, 0, 2 * Math.PI)
