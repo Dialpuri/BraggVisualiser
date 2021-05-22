@@ -1,0 +1,62 @@
+<!-- © Jordan Dialpuri 2021 -->
+
+<html>
+<head>
+    <script type="text/javascript" src="../static/js/rotated.js"></script>
+    <link rel="stylesheet" href="../static/css/stylesheet.css">
+    <link rel="icon" href="../static/image/favicon.ico">
+</head>
+<body>
+    <title>Bragg Visualiser</title>
+    <div class="slidecontainer" id = "sidebar">
+
+        <!-- <a href="/ewald"> -->
+        <h1 class="title">Bragg Visualiser</h1>
+        <!-- </a> -->
+        <h2 class="sliderTitle">Adjust variables</h2>
+        θ
+        <input type="range" min="15" max="38" step="0.1" value="22" class="slider" id="theta" />
+        <!-- <label id="thetaValue">30.00 °</label> -->
+        <input type="text" id="thetaValueText" name="thetaValue" value = "30.00" class = "inputBox" style = "border:0"/><span style="margin-left:2px;">°</span>
+        <p></p>
+        <div style= "text-align: center;">
+            d
+            <input type="range" min="3" max="10" step="0.25" value="5" class="slider" id="d" />
+            <!-- <label id="dValue">5.00 Å</label> -->
+            <input type="text" id="dValueText" name="dValue" value = "5.00" class = "inputBox" style = "border:0"/><span style="margin-left:2px;font-size: 14">Å</span>
+         </div>
+        <p></p>
+        λ
+        <input type="range" min="3" max="6" step="1" value="3" class="slider" id="wavelength" />
+        <label id="wavelengthValue">3 nm</label>
+        <p></p>
+        <div class="information">
+             <label id="information"> </label>
+        </div>
+        <h2 class="sliderTitle">Bragg Equation</h2>
+
+        <div class = "braggEquation">
+            2dsin(θ) = <label id = "2dsintheta"></label>
+            <p></p>
+            nλ = <label id = "nlambda"></label>
+        </div>
+        <p></p>
+    
+        You may need to zoom out to see the visualiser properly (Ctrl + -) 
+        <p style = "font-weight:bold ; padding: 10px;">When the d*ₕₖₗ line intersects with the outer edge of the circle the Bragg Equation is satisfied and a diffraction spot is expected. Play around the values to see this.</p>
+
+        <div class = "credits">
+            © Jordan Dialpuri 2021
+        </div>
+
+    </div>
+
+    <div class="container" width="1400">
+        <canvas id="myCanvas" class="canvas" width="1400px" height="700px">
+            Your browser does not support the HTML canvas tag.</canvas>
+        <p></p>
+        <canvas id="ewald" class="ewaldCanvas" width="400px" height="400px">Your browser does not support the HTML
+            canvas tag.</canvas>
+    </div>
+</body>
+</html>
