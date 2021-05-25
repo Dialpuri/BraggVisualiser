@@ -139,16 +139,24 @@ window.onload = function () {
     }
   
     thetaValueText.onchange = function( ){
+        regex_check = (this.value).match(regex)
         theta = parseFloat(this.value)
-        if ((this.value).match(regex)){
-            thetaTextBox.style.color = 'white'
-            console.log("allowed")
+        if (this.value <= 38 && this.value >= 15 && regex_check) {
+            thetaTextBox.style.color = "white"
+            theta = parseFloat(this.value)
+            thetaTextBox.value = (String(theta.toFixed(2)))
+            update()
+            thetaSlider.value = theta
         }
         else {
-            console.log("Not allowed")
-            thetaTextBox.style.color = 'red';
+            if (this.value > 38 && regex_check) {
+                thetaSlider.value = 38
+            }
+            else if (this.value < 15 && regex_check) { 
+                thetaSlider.value = 15
+            }
+            thetaTextBox.style.color = "red"
         }
-        console.log(theta)
     }
 
     dValueText.onchange = function () { 
